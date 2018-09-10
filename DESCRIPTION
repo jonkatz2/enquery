@@ -1,0 +1,13 @@
+Package: enquery
+Type: Package
+Title: High/Low/Most-Likely Sliders for Shiny
+Version: 0.1
+Date: 2018-08-30
+Author: Jon Katz
+Maintainer: Jon Katz <jonkatz4@gmail.com>
+Description: jQuery-ui sliders for 3-point and 4-point elicitation within shiny. 
+Imports: shiny (>= 0.11), htmltools
+URL: https://jonkatz2.github.io/enquery
+BugReports: https://github.com/jonkatz2/enquery/issues
+License: GPL-3
+

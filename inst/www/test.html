@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jQuery UI Slider - Multiple sliders</title>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <style>
+    .enquery > span {
+      float:left;
+    }
+    .enquery > span > p {
+      clear:both;
+      width:6em;
+    }
+    .enquery > span > p > input {
+      width:3em;
+    }
+    .enquery > span > .highlow {
+      height:300px; 
+      float:left; 
+      margin:15px 0px 15px 15px;
+    }
+/*    #eq > span > .highlow.ui-slider-vertical { */
+/*      width: 0.4em;*/
+/*    }*/
+    .enquery  > span > .highlow > .ui-slider-range { 
+      background: #729fcf; 
+      width: 1.2em;
+    }
+    .enquery  > span > .highlow > .ui-slider-handle { 
+      border-color: #729fcf; 
+/*      border-radius: 0.7em;*/
+/*      width: 1.4em;*/
+/*      height:1.4em;*/
+      border-radius: 0.1em;
+      width: 1.25em;
+      height:0.4em;
+      margin-bottom: -.3em;
+    }
+    
+    .enquery > span > .ml {
+      height:300px; 
+      float:left; 
+      margin:15px 15px 15px 0px;
+    }
+    .enquery > span > .ml.ui-slider-vertical { 
+      border: none;
+    }
+    .enquery  > span > .ml > .ui-slider-handle { 
+      width: 0; 
+      height: 0; 
+      border-top: 0.7em solid transparent; 
+      border-right: 1.4em solid red; 
+      border-bottom: 0.7em solid transparent;
+      border-left: 0em solid transparent;
+      border-radius:0;
+      background:transparent;
+      margin-bottom: -0.8em;
+    }
+  </style>
+  
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+  $( function() {
+    // setup highlow range
+    $( ".enquery > span > .highlow" ).each(function( index ) {
+      // read initial values from markup and remove that
+      var values =  $( this ).text().split(',').map(Number);
+      $( this ).empty().slider({
+        range: true,
+        min: 0,
+        max: 500,
+        values: values,
+        animate: true,
+        orientation: "vertical",
+        slide: function(event, ui) { 
+          $( ".hlabel" + index ).val( $( ".highlow", $(this).parent() ).slider( "values", 1 ) );
+          $( ".llabel" + index ).val( $( ".highlow", $(this).parent() ).slider( "values", 0 ) );
+          var ml = $(".ml", $(this).parent()).slider( "value");
+          if(ui.values[1] < ml | ui.values[0] > ml){
+             return false;
+          } else {
+            return ui.values;
+          }
+        }
+      });
+      $( ".hlabel" + index ).val( $( ".highlow", $(this).parent() ).slider( "values", 1 ) );
+      $( ".llabel" + index ).val( $( ".highlow", $(this).parent() ).slider( "values", 0 ) );
+    });
+    // setup ml point
+    $( ".enquery > span > .ml" ).each(function( index ) {
+      // read initial values from markup and remove that
+      var value = parseInt( $( this ).text(), 10 );
+      $( this ).empty().slider({
+        value: value,
+        min: 0,
+        max: 500,
+        animate: true,
+        orientation: "vertical",
+        slide: function(event, ui) { 
+          $( ".mllabel" + index ).val( $( ".ml", $(this).parent() ).slider( "value" ) );
+          var high = $(".highlow", $(this).parent()).slider( "values", 1);
+          var low =  $(".highlow", $(this).parent()).slider( "values", 0);
+          if(ui.value > high | ui.value < low){
+             return false;
+          } else {
+            return ui.value;
+          }
+        }
+      });
+      $( ".mllabel" + index ).val( $( ".ml", $(this).parent() ).slider( "value" ) );
+    });
+  } );
+  </script>
+</head>
+<body>
+
+<p class="ui-state-default ui-corner-all" style="padding:4px;">
+  <span class="ui-icon ui-icon-signal" style="float:left; margin:-2px 5px 0 0;"></span>
+  Graphic EQ
+</p>
+
+<p>
+  <label for="amount">slider range:</label>
+  <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+ 
+
+<div id="myEq" class="form-group shiny-input-radiogroup shiny-input-container enquery">
+  <span>
+    <span id="myEqhighlow0" class="highlow">100,200</span>
+    <span id="myEqml0" class="ml">150</span>
+    <p>
+      <label for="myEqhighlabel0" style="padding-left:1em;">H:</label>
+      <input type="text" id="myEqhighlabel0" class="hlabel0" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="myEqlowlabel0" style="padding-left:1em;">L:</label>
+      <input type="text" id="myEqlowlabel0" class="llabel0" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="myEqmllabel0">ML:</label>
+      <input type="text" id="myEqmllabel0" class="mllabel0" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+  </span>
+  <span>
+    <span id="myEqhighlow1" class="highlow">100,200</span>
+    <span id="myEqml1" class="ml">150</span>
+    <p>
+      <label for="myEqhighlabel1" style="padding-left:1em;">H:</label>
+      <input type="text" id="myEqhighlabel1" class="hlabel1" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="myEqlowlabel1" style="padding-left:1em;">L:</label>
+      <input type="text" id="myEqlowlabel1" class="llabel1" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="myEqmllabel1">ML:</label>
+      <input type="text" id="myEqmllabel1" class="mllabel1" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+  </span>
+  <span>
+    <span id="myEqhighlow2" class="highlow">100,200</span>
+    <span id="myEqml2" class="ml">150</span>
+    <p>
+      <label for="myEqhighlabel2" style="padding-left:1em;">H:</label>
+      <input type="text" id="myEqhighlabel2" class="hlabel2" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="myEqlowlabel2" style="padding-left:1em;">L:</label>
+      <input type="text" id="myEqlowlabel2" class="llabel2" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="myEqmllabel2">ML:</label>
+      <input type="text" id="myEqmllabel2" class="mllabel2" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+  </span>
+</div>
+
+<div id="differentEq" style="clear:both;" class="form-group shiny-input-radiogroup shiny-input-container enquery">
+  <span>
+    <span id="differentEqhighlow0" class="highlow">100,200</span>
+    <span id="differentEqml0" class="ml">150</span>
+    <p>
+      <label for="differentEqhighlabel0" style="padding-left:1em;">H:</label>
+      <input type="text" id="differentEqhighlabel0" class="hlabel0" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="differentEqlowlabel0" style="padding-left:1em;">L:</label>
+      <input type="text" id="differentEqlowlabel0" class="llabel0" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="differentEqmllabel0">ML:</label>
+      <input type="text" id="differentEqmllabel0" class="mllabel0" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+  </span>
+  <span>
+    <span id="differentEqhighlow1" class="highlow">100,200</span>
+    <span id="differentEqml1" class="ml">150</span>
+    <p>
+      <label for="differentEqhighlabel1" style="padding-left:1em;">H:</label>
+      <input type="text" id="differentEqhighlabel1" class="hlabel1" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="differentEqlowlabel1" style="padding-left:1em;">L:</label>
+      <input type="text" id="differentEqlowlabel1" class="llabel1" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="differentEqmllabel1">ML:</label>
+      <input type="text" id="differentEqmllabel1" class="mllabel1" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+  </span>
+  <span>
+    <span id="differentEqhighlow2" class="highlow">100,200</span>
+    <span id="differentEqml2" class="ml">150</span>
+    <p>
+      <label for="differentEqhighlabel2" style="padding-left:1em;">H:</label>
+      <input type="text" id="differentEqhighlabel2" class="hlabel2" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="differentEqlowlabel2" style="padding-left:1em;">L:</label>
+      <input type="text" id="differentEqlowlabel2" class="llabel2" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+    <p>
+      <label for="differentEqmllabel2">ML:</label>
+      <input type="text" id="differentEqmllabel2" class="mllabel2" readonly="" style="border:0; color:#f6931f; font-weight:bold;"/>
+    </p>
+  </span>
+</div>
+
+ 
+</body>
+</html>
+ 
+ 
+
