@@ -2,6 +2,8 @@
 library(shiny)
 library(enquery)
 
+options(shiny.sanitize.errors = FALSE)
+
 valuelistA <- list(
     `Gate Setting 1`=list(
         `Upper basin`=c(high=300, low=200, ml=250), 

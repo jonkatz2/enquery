@@ -329,13 +329,22 @@ function fourpointslider( id ) {
           disabled: disabled,
           orientation: "vertical",
           slide: function(event, ui) {
-            var ml = $(id + "ml" + i + "_" + j ).slider( "value");
-            if(ui.values[1] < ml | ui.values[0] > ml){
-               return false;
+            debugger;
+            if( $(this).data("frozen") == "true" ) { 
+              //alert("High and Low values are locked while you set a Most likely value.");
+              return false;
             } else {
-              return ui.values;
-            }
+              return true;
+            }; 
           },
+//          slide: function(event, ui) {
+//            var ml = $(id + "ml" + i + "_" + j ).slider( "value");
+//            if(ui.values[1] < ml | ui.values[0] > ml){
+//               return false;
+//            } else {
+//              return ui.values;
+//            }
+//          },
           stop: function(event, ui) {}
       });
     });
@@ -372,6 +381,99 @@ function fourpointslider( id ) {
      });
   });
 };
+
+
+$(document).ready(function() {
+    $(".fourpointslider-input a").click(function(event) {
+        var par = $(event.target).parent();
+        par.find("a").each(function() { $(this).removeClass("active") });
+        $(event.target).addClass(" active");
+        
+        var id = "#" + par.data("parent");
+        var step = $(event.target).data("step");
+        
+        if(step == "ml") {
+            enableML(id);
+            disableHighLow(id);
+            disableConfidence(id);
+        } else if(step == "confidence") {
+            enableConfidence(id);
+            enableML(id);
+            disableHighLow(id);
+        } else if(step == "highlow") {
+            enableHighLow(id);
+            disableML(id);
+            disableConfidence(id);
+        };
+    });
+});
+
+function isDisabled( disab ) {
+    var disabled = (disab === 'TRUE' || disab === 'true' || disab === 1 || disab === '1' || disab === true);
+    return disabled; 
+};
+
+function enableML( id ) {
+    $(id).find(".ml").each( function() { 
+        $(this).removeClass("vis-hide"); 
+        // check for data("disabled")
+        var disabled = $(this).data("disabled")
+        if(!isDisabled(disabled)) $(this).slider( "enable" );
+    });
+};
+
+function disableML( id ) {
+    $(id).find(".ml").each( function() {
+        $(this).slider( "disable" );
+        $(this).addClass(" vis-hide");
+    });
+};
+
+function enableHighLow( id ) {   
+    $(id).find(".highlow").each( function() { 
+        $(this).data("frozen", "false");
+        console.log("frozen: false")
+//        // check for data("disabled")
+//        var disabled = $(this).data("disabled")
+//        if(!isDisabled(disabled)) $(this).slider( "enable" );
+    });
+};
+
+function disableHighLow( id ) {
+    $(id).find(".highlow").each( function() { 
+        $(this).data("frozen", "true");
+        //$(this).slider("disable");
+    });
+};
+
+function enableConfidence( id ) {
+    $(id).find("input").each( function() {
+        $(this).removeClass("vis-hide"); 
+    });
+};
+
+function disableConfidence( id ) {
+    $(id).find("input").each( function() {
+        $(this).addClass("vis-hide"); 
+    });
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

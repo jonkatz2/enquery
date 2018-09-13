@@ -85,8 +85,8 @@ fourPointSliderInput <- function(
         subspans <- lapply(1:length(sublist), function(z) {
             if(!is.na(sublist[[z]]['disabled'])) disabled <- unlist(sublist[[z]]['disabled']) 
             tags$span(class="fourpointslider-vertical", 
-                tags$span(id=paste0(inputId, "highlow", x, "_", z-1), class=paste0("highlow fourpointslider", z-1), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-name`=groupnames[z], paste0(unlist(sublist[[z]][c('low','high')]), collapse=',')),
-                tags$span(id=paste0(inputId, "ml", x, "_", z-1), class=paste0("ml fourpointslider", z-1), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-name`=groupnames[z], unlist(sublist[[z]]['ml']))
+                tags$span(id=paste0(inputId, "highlow", x, "_", z-1), class=paste0("highlow fourpointslider", z-1), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-name`=groupnames[z], `data-frozen`="false", paste0(unlist(sublist[[z]][c('low','high')]), collapse=',')),
+                tags$span(id=paste0(inputId, "ml", x, "_", z-1), class=paste0("ml fourpointslider", z-1, " vis-hide"), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-name`=groupnames[z], unlist(sublist[[z]]['ml']))
             )
         })
         
@@ -95,7 +95,7 @@ fourPointSliderInput <- function(
             tags$p(class="x-axislabel", names(valuelist)[y]), #padleft
             tags$p(style="text-align:center;", #padleft
 #              tags$label(`for`=paste0(inputId, "conf", x), "Conf:"),
-              tags$input(style="text-align:center;", type="text", placeholder="Conf: 50-100%")
+              tags$input(class="vis-hide", style="text-align:center;", type="text", placeholder="Conf: 50-100%")
             )
         )
     })
@@ -122,10 +122,22 @@ fourPointSliderInput <- function(
         legend <- tags$table(tr)
     } else legend <- NULL
     
+    buttons <-tags$nav(class="navbar",
+#          tags$p(class="navbar-brand", "Steps"),
+          tags$div(class="collapse navbar-collapse",
+            tags$div(class="navbar-nav", `data-parent`=inputId,
+              tags$a(class="nav-item nav-link active", style="margin-right:-4px;", `data-step`="highlow", "Step 1: Set High and Low"),
+              tags$a(class="step-ml nav-item nav-link", style="margin-right:-4px;", `data-step`="ml", "Step 2: Set Most Likely"),
+              tags$a(class="nav-item nav-link", `data-step`="confidence", "Step 3: Set Confidence")
+            )
+          )
+     )       
+    
     slidertag <- tags$div(id=inputId, 
         type = 'fourpointslider',
         style = if (!is.null(width)) paste0("width: ", shiny::validateCssUnit(width), ";") else '',
         class = divClass,
+        buttons,
         legend,
         contents,
         tags$script(type="text/javascript", paste0("fourpointslider( '#", inputId, "' );"))
