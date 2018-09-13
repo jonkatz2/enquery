@@ -100,7 +100,7 @@ fourPointSliderInput <- function(
         )
     })
     
-    contents <- c(list(tags$div(class="fourpointslider-vertical-axis", style=paste0("height:",height,"px;"), ticks)), contents)
+    contents <- c(list(tags$div(class="fourpointslider-vertical-axis", style=paste0("height:",height,"px;"), ticks)), contents, list(tags$div(class="validate-legend")))
     
     if(length(ylab)) contents <- c(list(tags$div(class="fourpointslider-vertical-ylab", style=paste0("height:",height,"px;"), tags$p(style=paste0("height:", height, "px;width:", height, "px;"), ylab))), contents)
     
@@ -128,7 +128,8 @@ fourPointSliderInput <- function(
             tags$div(class="navbar-nav", `data-parent`=inputId,
               tags$a(class="nav-item nav-link active", style="margin-right:-4px;", `data-step`="highlow", "Step 1: Set High and Low"),
               tags$a(class="step-ml nav-item nav-link", style="margin-right:-4px;", `data-step`="ml", "Step 2: Set Most Likely"),
-              tags$a(class="nav-item nav-link", `data-step`="confidence", "Step 3: Set Confidence")
+              tags$a(class="nav-item nav-link", style="margin-right:-4px;", `data-step`="confidence", "Step 3: Set Confidence"),
+              tags$a(class="nav-item nav-link", `data-step`="validate", "Step 4: Validate")
             )
           )
      )       

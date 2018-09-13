@@ -211,7 +211,6 @@ $.extend(fourpointsliderBinding, {
   },
   
   getValue: function(el) {
-    var id = $(el).attr("id");
     var pod = {}
     $(el).find( "span" ).each( function( i ) {
       var grp = {}
@@ -318,7 +317,7 @@ function fourpointslider( id ) {
         var max = parseFloat( $( this ).data("max") );
         var step = parseFloat( $( this ).data("step") );
         var disab = $( this ).data("disabled");
-        var disabled = (disab === 'TRUE' || disab === 'true' || disab === 1 || disab === '1' || disab === true);
+        var disabled = isDisabled(disab);
         $( this ).empty().slider({
           range: true,
           min: min,
@@ -331,7 +330,7 @@ function fourpointslider( id ) {
           slide: function(event, ui) {
             debugger;
             if( $(this).data("frozen") == "true" ) { 
-              //alert("High and Low values are locked while you set a Most likely value.");
+              //alert("High and Low values are frozen while you set a Most likely value.");
               return false;
             } else {
               return true;
@@ -358,7 +357,7 @@ function fourpointslider( id ) {
         var max = parseFloat( $( this ).data("max") );
         var step = parseFloat( $( this ).data("step") );
         var disab = $( this ).data("disabled");
-        var disabled = (disab === 'TRUE' || disab === 'true' || disab === 1 || disab === '1' || disab === true);
+        var disabled = isDisabled(disab);
         $( this ).empty().slider({
           value: value,
           min: min,
@@ -367,22 +366,22 @@ function fourpointslider( id ) {
           animate: true,
           disabled: disabled,
           orientation: "vertical",
-          slide: function(event, ui) {
-            var high = $(id + "highlow" + i + "_" + j ).slider( "values", 1);
-            var low =  $(id + "highlow" + i + "_" + j ).slider( "values", 0);
-            if(ui.value > high | ui.value < low){
-               return false;
-            } else {
-              return ui.value;
-            }
-          },
+//          slide: function(event, ui) {
+//            var high = $(id + "highlow" + i + "_" + j ).slider( "values", 1);
+//            var low =  $(id + "highlow" + i + "_" + j ).slider( "values", 0);
+//            if(ui.value > high | ui.value < low){
+//               return false;
+//            } else {
+//              return ui.value;
+//            }
+//          },
           stop: function(event, ui) {}
         });
      });
   });
 };
 
-
+// march through the steps of a 4-point elicitation on nav click
 $(document).ready(function() {
     $(".fourpointslider-input a").click(function(event) {
         var par = $(event.target).parent();
@@ -404,15 +403,19 @@ $(document).ready(function() {
             enableHighLow(id);
             disableML(id);
             disableConfidence(id);
+        } else if(step == "validate") {
+            validateFPS(id);
         };
     });
 });
 
+// check against several variations on true
 function isDisabled( disab ) {
     var disabled = (disab === 'TRUE' || disab === 'true' || disab === 1 || disab === '1' || disab === true);
     return disabled; 
 };
 
+// unhide the ML slider
 function enableML( id ) {
     $(id).find(".ml").each( function() { 
         $(this).removeClass("vis-hide"); 
@@ -422,6 +425,7 @@ function enableML( id ) {
     });
 };
 
+// hide the ML slider
 function disableML( id ) {
     $(id).find(".ml").each( function() {
         $(this).slider( "disable" );
@@ -429,16 +433,14 @@ function disableML( id ) {
     });
 };
 
+// unfreeze the highlow slider
 function enableHighLow( id ) {   
     $(id).find(".highlow").each( function() { 
         $(this).data("frozen", "false");
-        console.log("frozen: false")
-//        // check for data("disabled")
-//        var disabled = $(this).data("disabled")
-//        if(!isDisabled(disabled)) $(this).slider( "enable" );
     });
 };
 
+// freeze the highlow slider
 function disableHighLow( id ) {
     $(id).find(".highlow").each( function() { 
         $(this).data("frozen", "true");
@@ -446,19 +448,81 @@ function disableHighLow( id ) {
     });
 };
 
+// show the confidence inputs
 function enableConfidence( id ) {
     $(id).find("input").each( function() {
         $(this).removeClass("vis-hide"); 
     });
 };
 
+// hide the confidence inputs
 function disableConfidence( id ) {
     $(id).find("input").each( function() {
         $(this).addClass("vis-hide"); 
     });
 };
 
-
+// validate four point slider responses
+function validateFPS( id ) {
+    enableConfidence(id);
+    enableML(id);
+    var mlerr = false;
+    var confblank = false;
+    var conflow = false;
+    // ml value must be between high and low values
+    $(id).find(".fourpointslider-vertical").each(function() { 
+        var ml = $(this).find(".ml").slider("value");
+        var highlow =  $(this).find(".highlow").slider("values");
+        if(ml < highlow[0] || ml > highlow[1]) {
+            $(this).addClass(" mlerr-err");
+            //$(this).effect("highlight", {color: '#b3ffb3'}, 10000);
+            mlerr = true;
+        } else {
+            $(this).removeClass("mlerr-err");
+        };
+    });
+    // confidence must not be blank, or less than 50
+    $(id).find("input").each(function() { 
+        if($(this).val() == "") {
+            $(this).addClass(" confblank-err");
+            //$(this).effect("highlight", {color: '#ffff99'}, 10000); 
+            confblank = true;
+        } else {
+            $(this).removeClass(" confblank-err");
+        };
+        if(parseFloat($(this).val()) < 50) {
+            $(this).addClass(" conflow-err");
+            //$(this).effect("highlight", {color: '#ff9380'}, 10000);
+            conflow = true;
+        } else {
+            $(this).removeClass(" conflow-err");
+        };
+    }); 
+    // place a legend onscreen
+    var leg = (mlerr || confblank || conflow);
+    if(leg) {
+        if(mlerr) {
+            mlerr = "<tr><td style='padding-right:1em;'>ML out of bounds</td><td class='mlerr-err legend-fill'></td></tr>";
+        } else {
+            mlerr = "";
+        };
+        if(confblank) {
+            confblank = "<tr><td style='padding-right:1em;'>Confidence missing</td><td class='confblank-err legend-fill'></td></tr>";
+        } else {
+            confblank = "";
+        };
+        if(conflow) {
+            conflow = "<tr><td style='padding-right:1em;'>Confidence < 50</td><td class='conflow-err legend-fill'></td></tr>";
+        } else {
+            conflow = "";
+        };
+        var leghtml = "<table>" + mlerr + confblank + conflow + "</table>";
+        $(id).find(".validate-legend").html(leghtml);
+    } else {
+        $(id).find(".validate-legend").empty();
+    };
+    
+};
 
 
 

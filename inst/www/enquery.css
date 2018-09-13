@@ -3,6 +3,29 @@
     visibility: hidden;
 }
 
+.validate-legend {
+    width: 16em;
+    margin: 8px auto;
+}
+
+.legend-fill {
+    padding: 8px;
+    height: 1em;
+    width: 3em;
+}
+
+.conflow-err {
+    background-color: #ff9380;
+}
+
+.confblank-err {
+    background-color: #ffff99;
+}
+
+.mlerr-err {
+    background-color: #b3ffb3;
+}
+
 .fourpointslider-input .navbar {
     padding: 0em 1em;
     margin: 1em;
