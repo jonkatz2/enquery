@@ -1,8 +1,8 @@
-updateEnquerySliderInput <- function(session, inputId, label = NULL, values = NULL) {
-  vals <- dropNulls(values)
+updateEnquerySliderInput <- function(session, inputId, label = NULL, valuelist = NULL) {
+  vals <- dropNulls(valuelist)
   message <- dropNulls(list(
     label = label,
-    values = values
+    valuelist = valuelist
   ))
   invisible(session$sendInputMessage(inputId, message))
 }

@@ -233,28 +233,39 @@ $.extend(fourpointsliderBinding, {
     return pod;
   },
   
-  setValue: function(el, value) {
+  setValue: function(el, valuelist) {
     var $id = "#" + $(el).attr("id");
-    for (var key in value) {
-      if (value.hasOwnProperty(key)) {
-        var sval = value[key]
+    for (var key in valuelist) {
+      if (valuelist.hasOwnProperty(key)) {
+        var sval = valuelist[key]
         $(el).find( ".sliderpod" ).each( function( ) {
           $(this).find( ".fourpointslider-vertical" ).each(function( ) {
-            var $label = $(this).find("p.x-axislabel").text();
-            if( $label == key ) {
+            var label = $(this).find(".highlow").data("label");
+//            var label = $(this).find("p.x-axislabel").text();
+            if( label == key ) {
               for (var skey in sval) {
-                if( sval.hasOwnProperty("high")) {
-                  $(this).find(".highlow").slider("values", 1, sval.high);
-                };
-                if( sval.hasOwnProperty("low")) {
-                  $(this).find(".highlow").slider("values", 0, sval.low);
-                };
-                if( sval.hasOwnProperty("ml")) {
-                  $(this).find(".ml").slider("value", sval.ml);
-                };
-                if( sval.hasOwnProperty("disabled")) {
-                  $(this).find(".ml").slider("disabled", sval.disabled);
-                  $(this).find(".highlow").slider("disabled", sval.disabled);
+                var setval = sval[skey];
+                var highlow = $(this).find(".highlow");
+                var ml = $(this).find(".ml");
+                var name = highlow.data("name");
+                if( name == skey ) {
+                  if( setval.hasOwnProperty("high")) {
+                    highlow.slider("values", 1, setval.high);
+                  };
+                  if( setval.hasOwnProperty("low")) {
+                    highlow.slider("values", 0, setval.low);
+                  };
+                  if( setval.hasOwnProperty("ml")) {
+                    ml.slider("value", setval.ml);
+                  };
+                  if( setval.hasOwnProperty("disabled")) {
+                    ml.slider("disabled", setval.disabled);
+                    highlow.slider("disabled", setval.disabled);
+                  };
+                  if( setval.hasOwnProperty("reference")) {
+                    ml.data("reference", setval.reference);
+                    highlow.data("reference", setval.reference);
+                  };
                 };
               };
             };
@@ -265,8 +276,8 @@ $.extend(fourpointsliderBinding, {
   },
   
   receiveMessage: function(el, data) {
-    if (data.hasOwnProperty('values'))
-      this.setValue(el, data.values);
+    if (data.hasOwnProperty('valuelist'))
+      this.setValue(el, data.valuelist);
 
 //      if (data.hasOwnProperty('label'))
 //        $(el).parent().find('label[for="' + $escape(el.id) + '"]').text(data.label);
@@ -316,8 +327,13 @@ function fourpointslider( id ) {
         var min = parseFloat( $( this ).data("min") );
         var max = parseFloat( $( this ).data("max") );
         var step = parseFloat( $( this ).data("step") );
+        // these two data vals come from R and may deviate from bare true
         var disab = $( this ).data("disabled");
-        var disabled = isDisabled(disab);
+        var disabled = isTrue(disab);
+        var ref = $( this ).data("reference");
+        var reference = isTrue(ref);
+        var subid = $(this).attr("id");
+        
         $( this ).empty().slider({
           range: true,
           min: min,
@@ -328,14 +344,25 @@ function fourpointslider( id ) {
           disabled: disabled,
           orientation: "vertical",
           slide: function(event, ui) {
-            debugger;
-            if( $(this).data("frozen") == "true" ) { 
+            if( $(this).data("frozen") == "true" || reference ) { 
               //alert("High and Low values are frozen while you set a Most likely value.");
               return false;
             } else {
+              if( $(this).data("live") == "1" ) { 
+                $( "#" + subid + "hlabel" ).html( ui.values[1] );
+                $( "#" + subid + "llabel" ).html( ui.values[0] );
+              };
               return true;
             }; 
           },
+          change: function(event, ui) {
+            if( $(this).data("live") == "1" ) { 
+              var id = $(this).attr("id");
+                $( "#" + subid + "hlabel" ).html( ui.values[1] );
+                $( "#" + subid + "llabel" ).html( ui.values[0] );
+            };
+          },
+//          slide: function(event, ui) {
 //          slide: function(event, ui) {
 //            var ml = $(id + "ml" + i + "_" + j ).slider( "value");
 //            if(ui.values[1] < ml | ui.values[0] > ml){
@@ -346,6 +373,11 @@ function fourpointslider( id ) {
 //          },
           stop: function(event, ui) {}
       });
+      // start the live update
+      if( $(this).data("live") == "1" ) { 
+        $( "#" + subid + "hlabel").html( $( this ).slider( "values", 1 ) );
+        $( "#" + subid + "llabel").html( $( this ).slider( "values", 0 ) );
+      };
     });
   });
   // setup ml point
@@ -357,7 +389,10 @@ function fourpointslider( id ) {
         var max = parseFloat( $( this ).data("max") );
         var step = parseFloat( $( this ).data("step") );
         var disab = $( this ).data("disabled");
-        var disabled = isDisabled(disab);
+        var disabled = isTrue(disab);
+        var ref = $( this ).data("reference");
+        var reference = isTrue(ref);
+        var subid = $(this).attr("id");
         $( this ).empty().slider({
           value: value,
           min: min,
@@ -366,6 +401,23 @@ function fourpointslider( id ) {
           animate: true,
           disabled: disabled,
           orientation: "vertical",
+          slide: function(event, ui) {
+            if( reference ) { 
+              //alert("High and Low values are frozen while you set a Most likely value.");
+              return false;
+            } else {
+              if( $(this).data("live") == "1" ) { 
+                $( "#" + subid + "mllabel" ).html( ui.value );
+              };
+              return true;
+            }; 
+          },
+          change: function(event, ui) {
+            if( $(this).data("live") == "1" ) { 
+              var id = $(this).attr("id");
+              $( "#" + subid + "mllabel" ).html( ui.value );
+            };
+          },
 //          slide: function(event, ui) {
 //            var high = $(id + "highlow" + i + "_" + j ).slider( "values", 1);
 //            var low =  $(id + "highlow" + i + "_" + j ).slider( "values", 0);
@@ -377,6 +429,10 @@ function fourpointslider( id ) {
 //          },
           stop: function(event, ui) {}
         });
+        // start the live update
+        if( $(this).data("live") == "1" ) { 
+          $( "#" + subid + "mllabel").html( $( this ).slider( "value" ) );
+        };
      });
   });
 };
@@ -410,9 +466,9 @@ $(document).ready(function() {
 });
 
 // check against several variations on true
-function isDisabled( disab ) {
-    var disabled = (disab === 'TRUE' || disab === 'true' || disab === 1 || disab === '1' || disab === true);
-    return disabled; 
+function isTrue( x ) {
+    var truth = (x === 'TRUE' || x === 'true' || x === 1 || x === '1' || x === true);
+    return truth; 
 };
 
 // unhide the ML slider
@@ -421,7 +477,7 @@ function enableML( id ) {
         $(this).removeClass("vis-hide"); 
         // check for data("disabled")
         var disabled = $(this).data("disabled")
-        if(!isDisabled(disabled)) $(this).slider( "enable" );
+        if(!isTrue(disabled)) $(this).slider( "enable" );
     });
 };
 

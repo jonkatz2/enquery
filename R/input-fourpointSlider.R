@@ -14,6 +14,7 @@ fourPointSliderInput <- function(
     ylab = NULL,
     height = 300,
     ht.unit = c('px', 'em'),
+    live.numbers = TRUE,
     vertical = TRUE, 
     width = NULL,
     legend = TRUE,
@@ -31,7 +32,7 @@ fourPointSliderInput <- function(
     if(missing(inputId)) stop('Must supply inputId.')
     if(missing(valuelist)) stop('Must supply valuelist.')
     if(!length(names(valuelist))) stop('valuelist should be a named list.')
-    
+    grouplabels <- names(valuelist)
     groupnames <- lapply(valuelist, names)
     if(!any(unlist(lapply(groupnames, length)))) stop('all values and list elements in valuelist must be named.')
     if(!any(unlist(lapply(groupnames, function(x) {all(x %in% groupnames[[1]]) && all(groupnames[[1]] %in% x)})))) stop('each element of valuelist should be the same length and have the same names.')
@@ -53,9 +54,10 @@ fourPointSliderInput <- function(
     tickpct <- tickpct/2
     
     divClass <- "fourpointslider-input"
-    
-    widest <- max(unlist(lapply(valuelist, length))) * 3.2
+    # width based on how many sliders are in a .sliderpod
+    widest <- max(unlist(lapply(valuelist, length))) * 3.8
     spanstyle <- paste0("height:",height,"px;width:", widest, "em;min-width:6em;")
+    # show/hide lines, background transparency
     if(bg.lines) {
         if(bg.transparent) spanstyle <- c(spanstyle, paste0("background: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, #00000000 1px, #00000000 ", tickpct, "%);"))
         else spanstyle <- c(spanstyle, paste0("background: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, #fff 1px, #fff ", tickpct, "%);"))
@@ -64,8 +66,8 @@ fourPointSliderInput <- function(
         else spanstyle <- c(spanstyle, "background:#fff;")
     }
     
-    disabled <- FALSE
-        
+    # list of sliders  
+    disabled <- reference <- FALSE  
     contents <- lapply(1:length(valuelist)-1, function(x) {
         # x is the js index (from 0); y is the R index (from 1)
         y <- x+1
@@ -81,37 +83,59 @@ fourPointSliderInput <- function(
         spanstyle <- paste0(spanstyle, collapse='')
         sublist <- valuelist[[y]]
         if(!is.list(sublist)) stop('valuelist must be a list of lists of vectors, or a list of list of lists.')
-        
+        # each set of sliders is in a .fourpointslider-vertical span 
         subspans <- lapply(1:length(sublist), function(z) {
+            livenumber <- "0"
+            if(z == length(sublist) && live.numbers) livenumber <- "1"
+            
             if(!is.na(sublist[[z]]['disabled'])) disabled <- unlist(sublist[[z]]['disabled']) 
+            if(!is.na(sublist[[z]]['reference'])) reference <- unlist(sublist[[z]]['reference'])
             tags$span(class="fourpointslider-vertical", 
-                tags$span(id=paste0(inputId, "highlow", x, "_", z-1), class=paste0("highlow fourpointslider", z-1), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-name`=groupnames[z], `data-frozen`="false", paste0(unlist(sublist[[z]][c('low','high')]), collapse=',')),
-                tags$span(id=paste0(inputId, "ml", x, "_", z-1), class=paste0("ml fourpointslider", z-1, " vis-hide"), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-name`=groupnames[z], unlist(sublist[[z]]['ml']))
+                tags$span(id=paste0(inputId, "highlow", x, "_", z-1), class=paste0("highlow fourpointslider", z-1), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-label`=grouplabels[y], `data-name`=groupnames[z], `data-frozen`="false", `data-live`=livenumber, paste0(unlist(sublist[[z]][c('low','high')]), collapse=',')),
+                tags$span(id=paste0(inputId, "ml", x, "_", z-1), class=paste0("ml fourpointslider", z-1, " vis-hide"), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-name`=groupnames[z], `data-live`=livenumber, unlist(sublist[[z]]['ml']))
             )
         })
+        # The live number display only updates from the right-most slider of each sliderpod
+        if(live.numbers) {
+            live.number.display <- div(
+                tags$div(
+                    tags$p(class="live-display-label", style="padding-left:1em;display:inline;", "H:"),
+                    tags$p(id=paste0(inputId, "highlow", x, "_", length(sublist)-1, "hlabel"), style="display:inline;", class=paste0("live-display"), style="color:#f6931f; font-weight:bold;")
+                ),
+                tags$div(
+                    tags$p(class="live-display-label", style="padding-left:1em;display:inline;", "L:"),
+                    tags$p(id=paste0(inputId, "highlow", x, "_", length(sublist)-1, "llabel"), style="display:inline;", class="live-display", style="color:#f6931f; font-weight:bold;")
+                ),
+                tags$div(
+                    tags$p(class="live-display-label", style="display:inline;", "ML:"),
+                    tags$p(id=paste0(inputId, "ml", x, "_", length(sublist)-1, "mllabel"), style="display:inline;", class="live-display", style="color:#f6931f; font-weight:bold;")
+                )
+            )
+        } else live.number.display <- div()
         
+        # the .fourpointslider-vertical spans are nested in .sliderpod spans
         tags$span(style=paste0("width:", widest, "em;min-width:6em;"),
             tags$span(class="sliderpod", style=spanstyle, subspans),
             tags$p(class="x-axislabel", names(valuelist)[y]), #padleft
-            tags$p(style="text-align:center;", #padleft
-#              tags$label(`for`=paste0(inputId, "conf", x), "Conf:"),
-              tags$input(class="vis-hide", style="text-align:center;", type="text", placeholder="Conf: 50-100%")
+            tags$div(style="text-align:center;", #padleft
+#                tags$label(`for`=paste0(inputId, "conf", x), "Conf:"),
+                tags$input(class="vis-hide", style="text-align:center;", type="text", placeholder="Conf: 50-100%"),
+                live.number.display
             )
         )
     })
-    
+    # lead with the vertical axis, follow with a placeholder for the validation legend
     contents <- c(list(tags$div(class="fourpointslider-vertical-axis", style=paste0("height:",height,"px;"), ticks)), contents, list(tags$div(class="validate-legend")))
-    
+    # optional y-axis label
     if(length(ylab)) contents <- c(list(tags$div(class="fourpointslider-vertical-ylab", style=paste0("height:",height,"px;"), tags$p(style=paste0("height:", height, "px;width:", height, "px;"), ylab))), contents)
-    
+    # style the colors of each slider
     inlinestyle <- list(tags$style(
         paste0(unlist(lapply(1:length(groupnames), function(x) {
             paste0("#", inputId, ' .highlow.fourpointslider', x-1, ' .ui-slider-range {background: ', col[x], ';}')
         })), collapse='\n')
     ))
-    
     contents <- c(inlinestyle, contents)
-    
+    # add a legend if requested
     if(legend) {
         tr <- lapply(1:length(groupnames), function(x) {
             tags$tr(
@@ -121,7 +145,7 @@ fourPointSliderInput <- function(
         })
         legend <- tags$table(tr)
     } else legend <- NULL
-    
+    # A nav above the input has buttons for the four steps
     buttons <-tags$nav(class="navbar",
 #          tags$p(class="navbar-brand", "Steps"),
           tags$div(class="collapse navbar-collapse",
@@ -133,7 +157,7 @@ fourPointSliderInput <- function(
             )
           )
      )       
-    
+    # The type key is used by the input binding find method
     slidertag <- tags$div(id=inputId, 
         type = 'fourpointslider',
         style = if (!is.null(width)) paste0("width: ", shiny::validateCssUnit(width), ";") else '',
@@ -149,7 +173,7 @@ fourPointSliderInput <- function(
 }
 
 
-
+# convert a list to a data.frame
 fmtFourPointSlider <- function(x) {
     conf <- lapply(x, function(y) y$conf)
     hlml <- lapply(x, function(y) {

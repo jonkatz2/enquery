@@ -1,3 +1,14 @@
+.fourpointslider-input .reference {
+    background-color: #fff;
+}
+
+.fourpointslider-input .ui-state-disabled {
+    background-color: lightgray;
+}
+
+.fourpointslider-input .highlow {
+    background-color: #d9d9d9;
+}
 
 .vis-hide {
     visibility: hidden;
@@ -6,12 +17,15 @@
 .validate-legend {
     width: 16em;
     margin: 8px auto;
+    clear: both;
+    padding-top: 8px;
 }
 
 .legend-fill {
     padding: 8px;
     height: 1em;
     width: 3em;
+    border: 1px solid rgb(51, 51, 51);
 }
 
 .conflow-err {
@@ -30,6 +44,7 @@
     padding: 0em 1em;
     margin: 1em;
 }
+
 /*.fourpointslider-input .navbar-brand {*/
 /*    padding-right:1em;*/
 /*}*/
@@ -147,12 +162,16 @@
 /*###############################*/
 /*Grouped sliders*/
 /*###############################*/
+.live-display {
+    width: 4em;
+}
+
 .sliderpod {
   float:left;
 }
 
 .fourpointslider-vertical {
-  float:left;
+/*  float:left;*/
   border-bottom: 1px solid #ddd;
   margin-bottom: 8px;
 }
@@ -167,10 +186,10 @@
   text-align:center;
   margin:0px;
 }
-.fourpointslider-input > span > p {
+.fourpointslider-input > span > div {
   clear:both;
 }
-.fourpointslider-input > span > p > input {
+.fourpointslider-input > span > div > input {
   max-width: 9em;
   width: 100%;
 }
