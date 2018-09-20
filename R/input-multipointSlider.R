@@ -4,7 +4,7 @@
 
 
 
-fourPointSliderInput <- function(
+multiPointSliderInput <- function(
     inputId, 
     label, 
     min,
@@ -54,7 +54,7 @@ fourPointSliderInput <- function(
     tickpct <- 100/length(ticklabs)
     tickpct <- tickpct/2
     
-    divClass <- "fourpointslider-input"
+    divClass <- "multipointslider-input"
     # width based on how many sliders are in a .sliderpod
     widest <- max(unlist(lapply(valuelist, length))) * 3.8
     spanstyle <- paste0("height:",height,"px;width:", widest, "em;min-width:6em;")
@@ -84,16 +84,16 @@ fourPointSliderInput <- function(
         spanstyle <- paste0(spanstyle, collapse='')
         sublist <- valuelist[[y]]
         if(!is.list(sublist)) stop('valuelist must be a list of lists of vectors, or a list of list of lists.')
-        # each set of sliders is in a .fourpointslider-vertical span 
+        # each set of sliders is in a .multipointslider-vertical span 
         subspans <- lapply(1:length(sublist), function(z) {
             livenumber <- "0"
             if(z == length(sublist) && live.numbers) livenumber <- "1"
             
             if(!is.na(sublist[[z]]['disabled'])) disabled <- unlist(sublist[[z]]['disabled']) 
             if(!is.na(sublist[[z]]['reference'])) reference <- unlist(sublist[[z]]['reference'])
-            tags$span(class="fourpointslider-vertical", 
-                tags$span(id=paste0(inputId, "highlow", x, "_", z-1), class=paste0("highlow fourpointslider", z-1), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-label`=grouplabels[y], `data-name`=groupnames[z], `data-frozen`="false", `data-live`=livenumber, paste0(unlist(sublist[[z]][c('low','high')]), collapse=',')),
-                tags$span(id=paste0(inputId, "ml", x, "_", z-1), class=paste0("ml fourpointslider", z-1, " vis-hide"), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-name`=groupnames[z], `data-live`=livenumber, unlist(sublist[[z]]['ml']))
+            tags$span(class="multipointslider-vertical", 
+                tags$span(id=paste0(inputId, "highlow", x, "_", z-1), class=paste0("highlow multipointslider", z-1), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-label`=grouplabels[y], `data-name`=groupnames[z], `data-frozen`="false", `data-live`=livenumber, paste0(unlist(sublist[[z]][c('low','high')]), collapse=',')),
+                tags$span(id=paste0(inputId, "ml", x, "_", z-1), class=paste0("ml multipointslider", z-1, " vis-hide"), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-name`=groupnames[z], `data-live`=livenumber, unlist(sublist[[z]]['ml']))
             )
         })
         # The live number display only updates from the right-most slider of each sliderpod
@@ -118,7 +118,7 @@ fourPointSliderInput <- function(
         if(confidence) conf <- tags$select(class="vis-hide", tags$option(value='', ''), tags$option(value=55, '55'), tags$option(value=60, '60'), tags$option(value=65, '65'), tags$option(value=70, '70'), tags$option(value=75, '75'), tags$option(value=80, '80'), tags$option(value=85, '85'), tags$option(value=90, '90'), tags$option(value=95, '95'))
         else conf <- div()
         
-        # the .fourpointslider-vertical spans are nested in .sliderpod spans
+        # the .multipointslider-vertical spans are nested in .sliderpod spans
         tags$span(style=paste0("width:", widest, "em;min-width:6em;"),
             tags$span(class="sliderpod", style=spanstyle, subspans),
             tags$p(class="x-axislabel", names(valuelist)[y]), #padleft
@@ -131,13 +131,13 @@ fourPointSliderInput <- function(
         )
     })
     # lead with the vertical axis, follow with a placeholder for the validation legend
-    contents <- c(list(tags$div(class="fourpointslider-vertical-axis", style=paste0("height:",height,"px;"), ticks)), contents, list(tags$div(class="validate-legend")))
+    contents <- c(list(tags$div(class="multipointslider-vertical-axis", style=paste0("height:",height,"px;"), ticks)), contents, list(tags$div(class="validate-legend")))
     # optional y-axis label
-    if(length(ylab)) contents <- c(list(tags$div(class="fourpointslider-vertical-ylab", style=paste0("height:",height,"px;"), tags$p(style=paste0("height:", height, "px;width:", height, "px;"), ylab))), contents)
+    if(length(ylab)) contents <- c(list(tags$div(class="multipointslider-vertical-ylab", style=paste0("height:",height,"px;"), tags$p(style=paste0("height:", height, "px;width:", height, "px;"), ylab))), contents)
     # style the colors of each slider
     inlinestyle <- list(tags$style(
         paste0(unlist(lapply(1:length(groupnames), function(x) {
-            paste0("#", inputId, ' .highlow.fourpointslider', x-1, ' .ui-slider-range {background: ', col[x], ';}')
+            paste0("#", inputId, ' .highlow.multipointslider', x-1, ' .ui-slider-range {background: ', col[x], ';}')
         })), collapse='\n')
     ))
     contents <- c(inlinestyle, contents)
@@ -178,13 +178,13 @@ fourPointSliderInput <- function(
     }    
     # The type key is used by the input binding find method
     slidertag <- tags$div(id=inputId, 
-        type = 'fourpointslider',
+        type = 'multipointslider',
         style = if (!is.null(width)) paste0("width: ", shiny::validateCssUnit(width), ";") else '',
         class = divClass,
         buttons,
         legend,
         contents,
-        tags$script(type="text/javascript", paste0("fourpointslider( '#", inputId, "' );"))
+        tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );"))
     )
     
     htmltools::htmlDependencies(slidertag) <- jqueryDep
@@ -193,7 +193,7 @@ fourPointSliderInput <- function(
 
 
 # convert a list to a data.frame
-fmtFourPointSlider <- function(x) {
+fmtMultiPointSlider <- function(x) {
     conf <- lapply(x, function(y) {
         if(length(y$conf)) y$conf
         else NA

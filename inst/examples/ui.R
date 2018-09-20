@@ -84,29 +84,29 @@ ui <- fluidPage(
     div(style='clear:both;',
         p(class='text-bold', '4-point elicitation with repeating grouped categories: Each element on the x-axis contains any number of sub-elements (provided all elements have the same number of sub-elements).'),
         p(class='text-bold', 'Default colors are a blue gradient. The ML cannot move beyond the H or L and vice-versa.'),
-        fourPointSliderInput('lower', '', min=0, max=500, step=1, height=400, valuelist=valuelistA, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
+        multiPointSliderInput('lower', '', min=0, max=500, step=1, height=400, valuelist=valuelistA, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
     ),
     div(style='clear:both;',
         p(class='text-bold', 'Sliders can be disabled programmatically. Customize colors by setting either a custom gradient or discrete values.'),
-        fourPointSliderInput('middle', '', min=0, max=500, step=1, height=400, valuelist=valuelistB, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
+        multiPointSliderInput('middle', '', min=0, max=500, step=1, height=400, valuelist=valuelistB, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
     ),
     div(style='clear:both;',
         p(class='text-bold', 'Single sliders per group. Turn background lines off for a cleaner look.'),
-        fourPointSliderInput('upper', '', min=0, max=500, step=1, height=400, valuelist=valuelistC, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
+        multiPointSliderInput('upper', '', min=0, max=500, step=1, height=400, valuelist=valuelistC, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
     ),
     ####
     div(style='clear:both;',
         p(class='text-bold', '3-point elicitation with repeating grouped categories: Each element on the x-axis contains any number of sub-elements (provided all elements have the same number of sub-elements).'),
         p(class='text-bold', 'Default colors are a blue gradient. The ML cannot move beyond the H or L and vice-versa.'),
-        fourPointSliderInput('lower3', '', min=0, max=500, step=1, height=400, valuelist=valuelistA, confidence=FALSE, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
+        multiPointSliderInput('lower3', '', min=0, max=500, step=1, height=400, valuelist=valuelistA, confidence=FALSE, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
     ),
     div(style='clear:both;',
         p(class='text-bold', 'Sliders can be disabled programmatically. Customize colors by setting either a custom gradient or discrete values.'),
-        fourPointSliderInput('middle3', '', min=0, max=500, step=1, height=400, valuelist=valuelistB, confidence=FALSE, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
+        multiPointSliderInput('middle3', '', min=0, max=500, step=1, height=400, valuelist=valuelistB, confidence=FALSE, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
     ),
     div(style='clear:both;',
         p(class='text-bold', 'Single sliders per group. Turn background lines off for a cleaner look.'),
-        fourPointSliderInput('upper3', '', min=0, max=500, step=1, height=400, valuelist=valuelistC, confidence=FALSE, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
+        multiPointSliderInput('upper3', '', min=0, max=500, step=1, height=400, valuelist=valuelistC, confidence=FALSE, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
     ),
     div(style='text-align:center;min-height:200px;', actionLink('stop', 'server'))
 )

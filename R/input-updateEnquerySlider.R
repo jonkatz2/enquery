@@ -1,4 +1,4 @@
-updateEnquerySliderInput <- function(session, inputId, label = NULL, valuelist = NULL) {
+updateMultiPointSliderInput <- function(session, inputId, label = NULL, valuelist = NULL) {
   vals <- dropNulls(valuelist)
   message <- dropNulls(list(
     label = label,
