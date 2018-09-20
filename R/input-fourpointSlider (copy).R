@@ -4,7 +4,7 @@
 
 
 
-fourPointSliderInput <- function(
+`_fourPointSliderInput` <- function(
     inputId, 
     label, 
     min,
@@ -12,7 +12,8 @@ fourPointSliderInput <- function(
     step,
     valuelist,
     ylab = NULL,
-    confidence = TRUE,
+    height = 300,
+    ht.unit = c('px', 'em'),
     live.numbers = TRUE,
     vertical = TRUE, 
     width = NULL,
@@ -20,8 +21,6 @@ fourPointSliderInput <- function(
     bg.lines = TRUE,
     bg.box = TRUE,
     bg.transparent = TRUE,
-    height = 300,
-    ht.unit = c('px', 'em'),
     col = colorRampPalette(c('#0044b2','#c6d7f2'))
 ) {
     if(any(
@@ -114,18 +113,13 @@ fourPointSliderInput <- function(
             )
         } else live.number.display <- div()
         
-        # confidence
-        if(confidence) conf <- tags$select(class="vis-hide", tags$option(value='', ''), tags$option(value=55, '55'), tags$option(value=60, '60'), tags$option(value=65, '65'), tags$option(value=70, '70'), tags$option(value=75, '75'), tags$option(value=80, '80'), tags$option(value=85, '85'), tags$option(value=90, '90'), tags$option(value=95, '95'))
-        else conf <- div()
-        
         # the .fourpointslider-vertical spans are nested in .sliderpod spans
         tags$span(style=paste0("width:", widest, "em;min-width:6em;"),
             tags$span(class="sliderpod", style=spanstyle, subspans),
             tags$p(class="x-axislabel", names(valuelist)[y]), #padleft
             tags$div(style="text-align:center;", #padleft
 #                tags$label(`for`=paste0(inputId, "conf", x), "Conf:"),
-                conf,
-#                tags$input(class="vis-hide", style="text-align:center;", type="text", placeholder="Conf: 50-100%"),
+                tags$input(class="vis-hide", style="text-align:center;", type="text", placeholder="Conf: 50-100%"),
                 live.number.display
             )
         )
@@ -152,8 +146,7 @@ fourPointSliderInput <- function(
         legend <- tags$table(tr)
     } else legend <- NULL
     # A nav above the input has buttons for the four steps
-    if(confidence) {
-        buttons <- tags$nav(class="navbar",
+    buttons <-tags$nav(class="navbar",
 #          tags$p(class="navbar-brand", "Steps"),
           tags$div(class="collapse navbar-collapse",
             tags$div(class="navbar-nav", `data-parent`=inputId,
@@ -163,19 +156,7 @@ fourPointSliderInput <- function(
               tags$a(class="nav-item nav-link", `data-step`="validate", "Step 4: Validate")
             )
           )
-        ) 
-    } else {
-        buttons <- tags$nav(class="navbar",
-#          tags$p(class="navbar-brand", "Steps"),
-          tags$div(class="collapse navbar-collapse",
-            tags$div(class="navbar-nav", `data-parent`=inputId,
-              tags$a(class="nav-item nav-link active", style="margin-right:-4px;", `data-step`="highlow", "Step 1: Set High and Low"),
-              tags$a(class="step-ml nav-item nav-link", style="margin-right:-4px;", `data-step`="ml", "Step 2: Set Most Likely"),
-              tags$a(class="nav-item nav-link", `data-step`="validate", "Step 3: Validate")
-            )
-          )
-        )
-    }    
+     )       
     # The type key is used by the input binding find method
     slidertag <- tags$div(id=inputId, 
         type = 'fourpointslider',
@@ -194,10 +175,7 @@ fourPointSliderInput <- function(
 
 # convert a list to a data.frame
 fmtFourPointSlider <- function(x) {
-    conf <- lapply(x, function(y) {
-        if(length(y$conf)) y$conf
-        else NA
-    })
+    conf <- lapply(x, function(y) y$conf)
     hlml <- lapply(x, function(y) {
         subl <- lapply(y$data, function(z) as.data.frame(z))
         do.call(rbind.data.frame, subl)

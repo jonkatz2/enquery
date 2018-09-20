@@ -171,7 +171,7 @@
 }
 
 .fourpointslider-vertical {
-/*  float:left;*/
+  float:left;
   border-bottom: 1px solid #ddd;
   margin-bottom: 8px;
 }
@@ -192,6 +192,11 @@
 .fourpointslider-input > span > div > input {
   max-width: 9em;
   width: 100%;
+}
+.fourpointslider-input > span > div > select {
+  max-width: 9em;
+  width: 100%;
+  text-align: center;
 }
 .fourpointslider-input .highlow {
   float:left; 

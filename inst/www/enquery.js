@@ -226,7 +226,7 @@ $.extend(fourpointsliderBinding, {
             grp[name] = ( slide );
           };
         });
-        var conf = $(this).find( "input" ).val();
+        var conf = parseInt( $(this).find( "select" ).val() );
         pod[label] = ( { "data":grp, "conf":conf } );
       };
     });
@@ -237,12 +237,26 @@ $.extend(fourpointsliderBinding, {
     var $id = "#" + $(el).attr("id");
     for (var key in valuelist) {
       if (valuelist.hasOwnProperty(key)) {
-        var sval = valuelist[key]
-        $(el).find( ".sliderpod" ).each( function( ) {
-          $(this).find( ".fourpointslider-vertical" ).each(function( ) {
-            var label = $(this).find(".highlow").data("label");
-//            var label = $(this).find("p.x-axislabel").text();
-            if( label == key ) {
+        var sval = valuelist[key];
+        
+        if( sval.hasOwnProperty("conf") ) {
+          var conf = sval.conf;
+        } else {
+          var conf = 0;
+        };
+        
+        if( sval.hasOwnProperty("data") ) sval = sval["data"];
+        
+        $(el).find( "span" ).each( function( ) {
+          var label = $(this).find(".highlow").data("label");
+          if( label == key ) {
+            if(conf !== null) {
+              if(conf != 0 && conf != "") $(this).find( "select" ).val( conf );
+            };
+//        $(el).find( ".sliderpod" ).each( function( ) {
+            $(this).find( ".fourpointslider-vertical" ).each(function( ) {
+//            var label = $(this).find(".highlow").data("label");
+//            if( label == key ) {
               for (var skey in sval) {
                 var setval = sval[skey];
                 var highlow = $(this).find(".highlow");
@@ -268,8 +282,8 @@ $.extend(fourpointsliderBinding, {
                   };
                 };
               };
-            };
-          });
+            });
+          };
         });
       };
     }
@@ -295,7 +309,7 @@ $.extend(fourpointsliderBinding, {
         callback(true);
       });
     })
-    $( el ).find( "input" ).each( function() { 
+    $( el ).find( "select" ).each( function() { 
       $(this).on("change", function(event) { callback(false); } );
     });
   },
@@ -305,7 +319,7 @@ $.extend(fourpointsliderBinding, {
       $(this).off(".highlow");
       $(this).off(".ml");
     });
-    $( el ).find( "input" ).each( function() { 
+    $( el ).find( "select" ).each( function() { 
       $(this).off();
     });
   }
@@ -506,14 +520,14 @@ function disableHighLow( id ) {
 
 // show the confidence inputs
 function enableConfidence( id ) {
-    $(id).find("input").each( function() {
+    $(id).find("select").each( function() {
         $(this).removeClass("vis-hide"); 
     });
 };
 
 // hide the confidence inputs
 function disableConfidence( id ) {
-    $(id).find("input").each( function() {
+    $(id).find("select").each( function() {
         $(this).addClass("vis-hide"); 
     });
 };
@@ -537,8 +551,8 @@ function validateFPS( id ) {
             $(this).removeClass("mlerr-err");
         };
     });
-    // confidence must not be blank, or less than 50
-    $(id).find("input").each(function() { 
+    // confidence must not be blank
+    $(id).find("select").each(function() { 
         if($(this).val() == "") {
             $(this).addClass(" confblank-err");
             //$(this).effect("highlight", {color: '#ffff99'}, 10000); 
@@ -546,14 +560,24 @@ function validateFPS( id ) {
         } else {
             $(this).removeClass(" confblank-err");
         };
-        if(parseFloat($(this).val()) < 50) {
-            $(this).addClass(" conflow-err");
-            //$(this).effect("highlight", {color: '#ff9380'}, 10000);
-            conflow = true;
-        } else {
-            $(this).removeClass(" conflow-err");
-        };
     }); 
+//    // confidence must not be blank, or less than 50
+//    $(id).find("input").each(function() { 
+//        if($(this).val() == "") {
+//            $(this).addClass(" confblank-err");
+//            //$(this).effect("highlight", {color: '#ffff99'}, 10000); 
+//            confblank = true;
+//        } else {
+//            $(this).removeClass(" confblank-err");
+//        };
+//        if(parseFloat($(this).val()) < 50) {
+//            $(this).addClass(" conflow-err");
+//            //$(this).effect("highlight", {color: '#ff9380'}, 10000);
+//            conflow = true;
+//        } else {
+//            $(this).removeClass(" conflow-err");
+//        };
+//    }); 
     // place a legend onscreen
     var leg = (mlerr || confblank || conflow);
     if(leg) {

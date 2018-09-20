@@ -15,7 +15,7 @@ function(input, output, session) {
   
   observeEvent(input$middle, {
     newvals <- input$middle
-    newvals <- lapply(newvals, function(x) x$data)
+#    newvals <- lapply(newvals, function(x) x$data)
     updateEnquerySliderInput(session, 'upper', valuelist=newvals) 
   }, ignoreInit=TRUE)
 }
