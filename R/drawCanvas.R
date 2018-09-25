@@ -29,6 +29,7 @@ drawLineInput <- function(inputId, xlim, ylim, xlab="", ylab="", px.wide, px.hig
         border: 1px solid black;
         margin: auto;
         background: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, #00000000 1px, #00000000 ', ytick[[2]], '%), repeating-linear-gradient(to right, #ddd, #ddd 1px, #00000000 1px, #00000000 ', xtick[[2]], '%);
+        background-image: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, #00000000 1px, #00000000 ', ytick[[2]], '%), repeating-linear-gradient(to right, #ddd, #ddd 1px, #00000000 1px, #00000000 ', xtick[[2]], '%);
       }'
     )
     
