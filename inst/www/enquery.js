@@ -405,6 +405,51 @@ function validateFPS( id ) {
 };
 
 
+//#################
+//    canvas
+//#################
+var drawlineinputBinding = new Shiny.InputBinding();
+
+$.extend(drawlineinputBinding, {
+  find: function(scope) {
+    return $(scope).find('div[type="drawLine-input"]').find(".drawLine-container");
+  },
+  
+  getId: function(el) {
+    return $(el).attr("id");
+  },
+  
+  getValue: function(el) {
+    return $(el).data("value");
+  },
+  
+  setValue: function(el, valuelist) {
+    
+  },
+  
+  receiveMessage: function(el, data) {
+    if (data.hasOwnProperty('valuelist'))
+      this.setValue(el, data.valuelist);
+
+//      if (data.hasOwnProperty('label'))
+//        $(el).parent().find('label[for="' + $escape(el.id) + '"]').text(data.label);
+
+//      $(el).trigger('change');
+  },
+  
+  subscribe: function(el, callback) {
+    $(el).find("canvas").on("mouseup", function(e){
+      callback(true);
+    });
+  },
+
+  unsubscribe: function(el) {
+    $(el).find("canvas").off("mouseup");
+  }
+  
+});
+
+Shiny.inputBindings.register(drawlineinputBinding)
 
 
 

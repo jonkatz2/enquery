@@ -79,6 +79,9 @@ ui <- fluidPage(
     singleton(tags$head(
         tags$style('.text-bold {font-weight:bold;}')
     )),
+    div(style="clear:both;",
+        drawLineInput("myInput", xlim=c(0,25), ylim=c(0, 100), xlab="x-label", ylab="y-label", px.wide=800, px.high=600)
+    ),
     # Application title
     h2(style='text-align:center;', "Input Sliders For Expert Elicitation"),
     div(style='clear:both;',
