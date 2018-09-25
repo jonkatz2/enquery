@@ -5,6 +5,6 @@ account: jkatz
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 434593
-bundleId: 1584170
+bundleId: 1604218
 url: https://jkatz.shinyapps.io/examples/
-when: 1536858032.14953
+when: 1537878005.97102

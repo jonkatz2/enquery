@@ -80,14 +80,17 @@ ui <- fluidPage(
         tags$style('.text-bold {font-weight:bold;}')
     )),
     h2(style='text-align:center;', "Free-draw a Trend For Expert Elicitation"),
-    div(style="clear:both;",
-        p(class='text-bold', 'Click and drag to draw the trend you expect to see. Use the "clear" button to re-draw as many times as you need.')
+    div(style="clear:both;float:left;width:50%;",
+        p(class='text-bold', 'Click and drag to draw the trend you expect to see. Use the "clear" button to re-draw as many times as you need.'),
+        actionButton('setval', 'restore value'),
+        div(style="clear:both;", drawLineInput("myInput", xlim=c(0,25.1), ylim=c(0, 100), xlab="x-label", ylab="y-label", px.wide=600, px.high=400))
     ),
-    div(style="clear:both;",
-        drawLineInput("myInput", xlim=c(0,25), ylim=c(0, 100), xlab="x-label", ylab="y-label", px.wide=800, px.high=600)
+    div(style="float:right;width:50%;border:1px solid gray;padding:1em;",
+        p(class='text-bold', 'The server sees the x and y data which can easily be modeled or used for interpolation'),
+        div(style="padding-top:80px;", plotOutput('drawoutput', width='700px', height='550px'))
     ),
     # Application title
-    h2(style='text-align:center;', "Input Sliders For Expert Elicitation"),
+    h2(style='clear:both;text-align:center;', "Input Sliders For Expert Elicitation"),
     div(style='clear:both;',
         p(class='text-bold', '4-point elicitation with distinct steps to focus first on range, then on most-likely, and finally on confidence.'),
         multiPointSliderInput('lower', '', min=0, max=500, step=1, height=400, valuelist=valuelistA, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))

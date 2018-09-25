@@ -19,7 +19,6 @@ makeAxis <- function(range, height, width) {
 
 
 drawLineInput <- function(inputId, xlim, ylim, xlab="", ylab="", px.wide, px.high, width) {
-    
     xtick <- makeAxis(xlim, width=px.wide)
     ytick <- makeAxis(ylim, height=px.high)
     
@@ -41,7 +40,7 @@ drawLineInput <- function(inputId, xlim, ylim, xlab="", ylab="", px.wide, px.hig
         tags$div(
             tags$div(class="drawLine-y-lab", p(ylab)),
             tags$div(class="drawLine-y-axis", ytick[[1]]),
-            tags$div(id=inputId, class="drawLine-container", `data-value`=HTML('{"x":[], "y":[], "d":[]}')),
+            tags$div(id=inputId, class="drawLine-container", `data-value`=HTML('{"x":[], "y":[], "d":[]}'), `data-dims`=HTML(paste0('{"x":', px.wide, ',"y":', px.high, '}')), `data-ylim`=HTML(paste0('{"min":', ylim[1], ',"max":', ylim[2], '}')), `data-xlim`=HTML(paste0('{"min":', xlim[1], ',"max":', xlim[2], '}'))),
             tags$div(class="drawLine-x-axis", style=paste0("padding-left:", xpad, "px;"), xtick[[1]]),
             tags$div(class="drawLine-x-lab", style=paste0("padding-left:", px.wide/2-nchar(xlab)*5+xpad, "px;"), p(xlab)),
             dragCanvas(inputId, width=px.wide,height=px.high)
@@ -50,6 +49,19 @@ drawLineInput <- function(inputId, xlim, ylim, xlab="", ylab="", px.wide, px.hig
     htmltools::htmlDependencies(canvastag) <- jqueryDep
     htmltools::attachDependencies(canvastag, enqueryDep, append=TRUE)
 }
+
+
+updateDrawLineInput <- function(session, inputId, label=NULL, valuelist) {
+  vals <- dropNulls(valuelist)
+  message <- dropNulls(list(
+    label = label,
+    valuelist = valuelist
+  ))
+  invisible(session$sendInputMessage(inputId, message))
+}
+
+
+
 
 dragCanvas <- function(inputId, width, height) {
     tags$script(type="text/javascript",
@@ -90,6 +102,7 @@ dragCanvas <- function(inputId, width, height) {
             });
             
             $('#", inputId, "').mouseleave(function(e){
+              $('#", inputId, "').data('value', {\"x\":", inputId, "clickX, \"y\":", inputId, "clickY, \"d\":", inputId, "clickDrag});
               ", inputId, "paint = false;
             });
             

@@ -420,11 +420,53 @@ $.extend(drawlineinputBinding, {
   },
   
   getValue: function(el) {
-    return $(el).data("value");
+    var dims = $(el).data("dims");
+    var ht = dims.y;
+    var wd = dims.x;
+    var ylim = $(el).data("ylim");
+    var xlim = $(el).data("xlim");
+    var value = $(el).data("value");
+    if(value.hasOwnProperty('x')) {
+      var clickX = value.x.map(function(e){
+          return e/wd * (xlim.max - xlim.min);
+      });
+    };
+    if(value.hasOwnProperty('y')) {
+      var clickY = value.y.map(function(e){
+          return (ht - e)/ht * (ylim.max - ylim.min);
+      });
+    };
+    return {"x":clickX, "y":clickY, "d":value.d}
   },
   
   setValue: function(el, valuelist) {
+    var dims = $(el).data("dims");
+    var ht = dims.y;
+    var wd = dims.x;
+    var ylim = $(el).data("ylim");
+    var xlim = $(el).data("xlim");
+    if(valuelist.hasOwnProperty('x')) {
+      var clickX = valuelist.x.map(function(e){
+          return e/(xlim.max - xlim.min) * wd;
+      });
+    };
+    if(valuelist.hasOwnProperty('y')) {
+      var clickY = valuelist.y.map(function(e){
+          return ht - ( e/(ylim.max - ylim.min) * ht );
+      });
+    };
     
+    var id = $(el).attr("id");
+    window[id + "clickX"] = clickX;
+    window[id + "clickY"] = clickY;
+    window[id + "clickDrag"] = valuelist.d;
+    
+    $(el).data('value', {"x":clickX, "y":clickY, "d":valuelist.d});
+    
+    var redraw = window[id + "redraw"];
+    if(typeof redraw === 'function') {
+        redraw();
+    };
   },
   
   receiveMessage: function(el, data) {
@@ -438,13 +480,23 @@ $.extend(drawlineinputBinding, {
   },
   
   subscribe: function(el, callback) {
-    $(el).find("canvas").on("mouseup", function(e){
+    var canvas = $(el).find("canvas");
+    canvas.on("mouseleave", function(e){
+      callback(true);
+    });
+    canvas.on("mouseup", function(e){
+      callback(true);
+    });
+    canvas.on("click", function(e){
       callback(true);
     });
   },
 
   unsubscribe: function(el) {
-    $(el).find("canvas").off("mouseup");
+    var canvas = $(el).find("canvas");
+    canvas.off("mouseup");
+    canvas.off("click");
+    canvas.off("mouseleave");
   }
   
 });

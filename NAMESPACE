@@ -1,4 +1,5 @@
 export(drawLineInput)
+export(updateDrawLineInput)
 export(multiPointSliderInput)
 export(updateMultiPointSliderInput)
 export(fmtMultiPointSlider)
