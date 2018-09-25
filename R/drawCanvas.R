@@ -33,7 +33,7 @@ drawLineInput <- function(inputId, xlim, ylim, xlab="", ylab="", px.wide, px.hig
       }'
     )
     
-    xpad <- ytick[[3]] * 10 + 10 + as.logical(nchar(ylab)) * 77
+    xpad <- ytick[[3]] * 10 + 10 + as.logical(nchar(ylab)) * 65
     
     canvastag <- tags$div(style=paste0("width:", width, ";"), class="drawLine-input", type="drawLine-input",
         tags$style(css),

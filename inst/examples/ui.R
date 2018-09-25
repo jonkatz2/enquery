@@ -79,18 +79,21 @@ ui <- fluidPage(
     singleton(tags$head(
         tags$style('.text-bold {font-weight:bold;}')
     )),
+    h2(style='text-align:center;', "Free-draw a Trend For Expert Elicitation"),
+    div(style="clear:both;",
+        p(class='text-bold', 'Click and drag to draw the trend you expect to see. Use the "clear" button to re-draw as many times as you need.')
+    ),
     div(style="clear:both;",
         drawLineInput("myInput", xlim=c(0,25), ylim=c(0, 100), xlab="x-label", ylab="y-label", px.wide=800, px.high=600)
     ),
     # Application title
     h2(style='text-align:center;', "Input Sliders For Expert Elicitation"),
     div(style='clear:both;',
-        p(class='text-bold', '4-point elicitation with repeating grouped categories: Each element on the x-axis contains any number of sub-elements (provided all elements have the same number of sub-elements).'),
-        p(class='text-bold', 'Default colors are a blue gradient. The ML cannot move beyond the H or L and vice-versa.'),
+        p(class='text-bold', '4-point elicitation with distinct steps to focus first on range, then on most-likely, and finally on confidence.'),
         multiPointSliderInput('lower', '', min=0, max=500, step=1, height=400, valuelist=valuelistA, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
     ),
     div(style='clear:both;',
-        p(class='text-bold', 'Sliders can be disabled programmatically. Customize colors by setting either a custom gradient or discrete values.'),
+        p(class='text-bold', 'These sliders are linked in the server. The above sliders appear in the input below as disabled reference values.'),
         multiPointSliderInput('middle', '', min=0, max=500, step=1, height=400, valuelist=valuelistB, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
     ),
     div(style='clear:both;',
