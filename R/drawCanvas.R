@@ -1,6 +1,7 @@
 makeAxis <- function(range, height, width) {
     ticklabs <- pretty(range[1]:range[2])
     tickchar <- max(nchar(ticklabs))
+    tickrange <- range(ticklabs)
     if(missing(width)) {
         mintick <- ticklabs[1]
         ticklabs <- ticklabs[-1]
@@ -8,20 +9,24 @@ makeAxis <- function(range, height, width) {
         ticks <- c(ticks, list(tags$div(style="padding:0px 10px;text-align:right;",tags$p(mintick))))
         tickpct <- 100/length(ticklabs)
     } else {
-        ticks <- lapply(ticklabs, function(x) tags$span(class="drawLine-xtick", style=paste0("width: ", width/(length(ticklabs)-1), "px;"), x))
+        maxtick <- ticklabs[length(ticklabs)]
+        ticks <- lapply(ticklabs[-length(ticklabs)], function(x) tags$span(class="drawLine-xtick", style=paste0("width: ", width/(length(ticklabs)-1), "px;"), x))
+        ticks <- c(ticks, list(tags$span(class="drawLine-xtick", maxtick)))
         tickpct <- 100/(length(ticklabs) - 1)
     }
     if(!ticklabs[length(ticklabs)] %% 2) tickpct <- tickpct/2
     else if(!ticklabs[length(ticklabs)] %% 3) tickpct <- tickpct/3
-    list(ticks, tickpct, tickchar)
+    # return the tick tags, the % spacing for css lines, the number of characters for y axis offsetting, and (soon) the final range from pretty()
+    list(ticks, tickpct, tickchar, tickrange)
 }
 
-
+# Need to use computed ylim and xlim from results of pretty() in makeAxis()
 
 drawLineInput <- function(inputId, xlim, ylim, xlab="", ylab="", px.wide, px.high, width) {
     xtick <- makeAxis(xlim, width=px.wide)
     ytick <- makeAxis(ylim, height=px.high)
-    
+    xtickrange <- xtick[[4]]
+    ytickrange <- ytick[[4]]
     if(missing(width)) width <- "100%"
     css <- paste0('#', inputId, ' {
         height: ', px.high, 'px;
@@ -34,16 +39,16 @@ drawLineInput <- function(inputId, xlim, ylim, xlab="", ylab="", px.wide, px.hig
     )
     
     xpad <- ytick[[3]] * 10 + 10 + as.logical(nchar(ylab)) * 65
-    
+    #"px;width:", xpad + px.wide + 16, 
     canvastag <- tags$div(style=paste0("width:", width, ";"), class="drawLine-input", type="drawLine-input",
         tags$style(css),
         tags$button(id=paste0(inputId, "clearCanvas"), "Clear"),
         tags$div(
-            tags$div(class="drawLine-y-lab", p(ylab)),
+            tags$div(class="drawLine-y-lab", style=paste0("height:", px.high, "px;"), p(style=paste0("height:", px.high, "px;width:", px.high,"px;"), ylab)),
             tags$div(class="drawLine-y-axis", ytick[[1]]),
-            tags$div(id=inputId, class="drawLine-container", `data-value`=HTML('{"x":[], "y":[], "d":[]}'), `data-dims`=HTML(paste0('{"x":', px.wide, ',"y":', px.high, '}')), `data-ylim`=HTML(paste0('{"min":', ylim[1], ',"max":', ylim[2], '}')), `data-xlim`=HTML(paste0('{"min":', xlim[1], ',"max":', xlim[2], '}'))),
+            tags$div(id=inputId, class="drawLine-container", `data-value`=HTML('{"x":[], "y":[], "d":[]}'), `data-dims`=HTML(paste0('{"x":', px.wide, ',"y":', px.high, '}')), `data-ylim`=HTML(paste0('{"min":', ytickrange[1], ',"max":', ytickrange[2], '}')), `data-xlim`=HTML(paste0('{"min":', xtickrange[1], ',"max":', xtickrange[2], '}'))),
             tags$div(class="drawLine-x-axis", style=paste0("padding-left:", xpad, "px;"), xtick[[1]]),
-            tags$div(class="drawLine-x-lab", style=paste0("padding-left:", px.wide/2-nchar(xlab)*5+xpad, "px;"), p(xlab)),
+            tags$div(class="drawLine-x-lab", style=paste0("padding-left:", xpad, "px;width:", px.wide,"px;"), p(xlab)),
             dragCanvas(inputId, width=px.wide,height=px.high)
         )
     )
@@ -131,7 +136,8 @@ dragCanvas <- function(inputId, width, height) {
 			
               for(var i=0; i < ", inputId, "clickX.length; i++) {		
                 ", inputId, "context.beginPath();
-                if(", inputId, "clickDrag[i] && i){
+                //if(", inputId, "clickDrag[i] && i){
+                if(i){
                   ", inputId, "context.moveTo(", inputId, "clickX[i-1], ", inputId, "clickY[i-1]);
                  } else {
                    ", inputId, "context.moveTo(", inputId, "clickX[i]-1, ", inputId, "clickY[i]);

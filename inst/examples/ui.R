@@ -81,13 +81,13 @@ ui <- fluidPage(
     )),
     h2(style='text-align:center;', "Free-draw a Trend For Expert Elicitation"),
     div(style="clear:both;float:left;width:50%;",
-        p(class='text-bold', 'Click and drag to draw the trend you expect to see. Use the "clear" button to re-draw as many times as you need.'),
+        p(class='text-bold', style="width:500px;text-align:center;margin:auto;", 'Click and drag to draw the trend you expect to see. Use the "clear" button to re-draw as many times as you need.'),
         actionButton('setval', 'restore value'),
-        div(style="clear:both;", drawLineInput("myInput", xlim=c(0,25.1), ylim=c(0, 100), xlab="x-label", ylab="y-label", px.wide=600, px.high=400))
+        div(style="clear:both;", drawLineInput("myInput", xlim=c(0,25.1), ylim=c(0, 50), xlab="Year", ylab="Accretion rate (mm/year)", px.wide=600, px.high=400))
     ),
-    div(style="float:right;width:50%;border:1px solid gray;padding:1em;",
-        p(class='text-bold', 'The server sees the x and y data which can easily be modeled or used for interpolation'),
-        div(style="padding-top:80px;", plotOutput('drawoutput', width='700px', height='550px'))
+    div(style="float:right;width:50%;padding:1em;",
+        p(class='text-bold', style="width:500px;text-align:center;margin:auto;", 'The server sees the x and y data from which point data can be extracted by interpolation, or trends can be modeled'),
+        div(style="padding-top:45px;", tags$style("#drawoutput{margin:auto;}"), plotOutput('drawoutput', width='700px', height='550px'))
     ),
     # Application title
     h2(style='clear:both;text-align:center;', "Input Sliders For Expert Elicitation"),

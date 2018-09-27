@@ -207,7 +207,9 @@
 
 
 
-
+.drawLine-x-lab {
+    text-align: center;
+}
 
 
 .drawLine-y-lab {
@@ -215,6 +217,7 @@
     float: left;
     width: 3em;
     text-align: center;
+    z-index: -1;
 }
 
 .drawLine-y-lab p {
@@ -223,6 +226,7 @@
     transform: rotate(270deg);
     margin: 0;
     text-align: center;
+    z-index: -1;
 }
 
 .drawLine-input {

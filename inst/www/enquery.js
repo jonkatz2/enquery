@@ -428,12 +428,12 @@ $.extend(drawlineinputBinding, {
     var value = $(el).data("value");
     if(value.hasOwnProperty('x')) {
       var clickX = value.x.map(function(e){
-          return e/wd * (xlim.max - xlim.min);
+          return e/wd * (xlim.max - xlim.min) + xlim.min;
       });
     };
     if(value.hasOwnProperty('y')) {
       var clickY = value.y.map(function(e){
-          return (ht - e)/ht * (ylim.max - ylim.min);
+          return (ht - e)/ht * (ylim.max - ylim.min) + ylim.min;
       });
     };
     return {"x":clickX, "y":clickY, "d":value.d}
@@ -447,12 +447,12 @@ $.extend(drawlineinputBinding, {
     var xlim = $(el).data("xlim");
     if(valuelist.hasOwnProperty('x')) {
       var clickX = valuelist.x.map(function(e){
-          return e/(xlim.max - xlim.min) * wd;
+          return e/(xlim.max - xlim.min) * wd + xlim.min;
       });
     };
     if(valuelist.hasOwnProperty('y')) {
       var clickY = valuelist.y.map(function(e){
-          return ht - ( e/(ylim.max - ylim.min) * ht );
+          return ht - ( e/(ylim.max - ylim.min) * ht ) + ylim.min;
       });
     };
     
