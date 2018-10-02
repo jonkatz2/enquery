@@ -5,7 +5,10 @@ options(shiny.sanitize.errors = FALSE)
 
 function(input, output, session) {
   observeEvent(input$stop, browser())
-
+  
+  observeEvent(input$saveval, {
+    saveRDS(input$myInput, 'exampleval.RDS')
+  })
   observeEvent(input$setval, {
     updateDrawLineInput(session, 'myInput', valuelist = readRDS('exampleval.RDS'))
   })
@@ -18,17 +21,12 @@ function(input, output, session) {
         x <- unlist(dat$x)
         y <- unlist(dat$y)
         plot(x, y, type='l', ylim=ylim, xlim=xlim)
+        xlim <- c(floor(x[1]), ceiling(x[length(x)]))
         pts <- unlist(lapply(xlim[1]:xlim[2], function(z) {
             if(z == xlim[1] && length(x) && round(x[1]) == z) {
                 return(y[1])
             } else if(z == xlim[2] && length(x) && round(x[length(x)]) == z) {
-                xpts <- c(x[length(x)-1], x[length(x)])
-                ypts <- c(y[length(x)-1], y[length(x)])
-                if(xpts[1] == xpts[2]) return(mean(ypts))
-                else {
-                    ff <- stats::approxfun(x=xpts, y=ypts)
-                    ff(z)
-                }
+                return(y[length(x)])
             } else {
                 nearx <- abs(z-x)
                 if(min(nearx)[1] < 0.0001) return(y[which(nearx == min(nearx))][1])

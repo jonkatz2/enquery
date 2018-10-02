@@ -82,7 +82,7 @@ ui <- fluidPage(
     h2(style='text-align:center;', "Free-draw a Trend For Expert Elicitation"),
     div(style="clear:both;float:left;width:50%;",
         p(class='text-bold', style="width:500px;text-align:center;margin:auto;", 'Click and drag to draw the trend you expect to see. Use the "clear" button to re-draw as many times as you need.'),
-        actionButton('setval', 'restore value'),
+        div(style="width:33%;margin:auto;",actionButton('saveval', 'save value', style="float:left;"), actionButton('setval', 'restore value', style="float:left;")),
         div(style="clear:both;", drawLineInput("myInput", xlim=c(0,25.1), ylim=c(0, 50), xlab="Year", ylab="Accretion rate (mm/year)", px.wide=600, px.high=400))
     ),
     div(style="float:right;width:50%;padding:1em;",

@@ -16,11 +16,9 @@ makeAxis <- function(range, height, width) {
     }
     if(!ticklabs[length(ticklabs)] %% 2) tickpct <- tickpct/2
     else if(!ticklabs[length(ticklabs)] %% 3) tickpct <- tickpct/3
-    # return the tick tags, the % spacing for css lines, the number of characters for y axis offsetting, and (soon) the final range from pretty()
+    # return the tick tags, the % spacing for css lines, the number of characters for y axis offsetting, and the final range from pretty()
     list(ticks, tickpct, tickchar, tickrange)
 }
-
-# Need to use computed ylim and xlim from results of pretty() in makeAxis()
 
 drawLineInput <- function(inputId, xlim, ylim, xlab="", ylab="", px.wide, px.high, width) {
     xtick <- makeAxis(xlim, width=px.wide)
