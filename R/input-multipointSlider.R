@@ -193,7 +193,7 @@ multiPointSliderInput <- function(
 
 
 # convert a list to a data.frame
-fmtMultiPointSlider <- function(x) {
+sliderTable <- function(x) {
     conf <- lapply(x, function(y) {
         if(length(y$conf)) y$conf
         else NA
@@ -211,10 +211,20 @@ fmtMultiPointSlider <- function(x) {
     })
     hlml <- do.call(rbind.data.frame, hlml)
     rownames(hlml) <- 1:nrow(hlml)
+    for(i in 3:6) hlml[,i] <- as.numeric(hlml[,i])
     hlml
 }
 
-
+sliderList <- function(x) {
+    sapply(x$name, function(y) {
+        slids <- sapply(x[x$name == y, 'label'], function(z) {
+            as.list(x[x$name == y & x$label == z, c('high', 'low', 'ml')])
+        }, simplify=FALSE)
+        conf <- x[x$name == y, 'confidence'][1]
+        if(is.na(conf)) conf <- ''
+        c(list(conf=conf), slids)
+    }, simplify=FALSE)
+}
 
 
 

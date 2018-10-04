@@ -2,6 +2,31 @@ library(shiny)
 library(enquery)
 options(shiny.sanitize.errors = FALSE)
 
+# iteratively expand the index up or down until EITHER the xtol or ytol distance is exceeded
+employTol <- function(i, vx, vy, xtol, ytol, up=TRUE) {
+    j <- 1
+    if(up) {
+        xpts <- c(vx[i], vx[i + j])
+        ypts <- c(vy[i], vy[i + j])
+        while(abs(xpts[2] - xpts[1]) < xtol && abs(ypts[2] - ypts[1]) < ytol) {
+            j <- j + 1
+            newi <- min(i + j, length(vx))
+            xpts <- c(vx[i], vx[newi])
+            ypts <- c(vy[i], vy[newi])
+        }
+    } else {
+        xpts <- c(vx[i - j], vx[i])
+        ypts <- c(vy[i - j], vy[i])
+        while(abs(xpts[2] - xpts[1]) < xtol && abs(ypts[2] - ypts[1]) < ytol) {
+            j <- j + 1
+            newi <- max(i - j, 1)
+            xpts <- c(vx[newi], vx[i])
+            ypts <- c(vy[newi], vy[i])
+        }
+    }
+    list(x=xpts, y=ypts)
+}
+
 
 function(input, output, session) {
   observeEvent(input$stop, browser())
@@ -16,7 +41,9 @@ function(input, output, session) {
   output$drawoutput <- renderPlot({
     dat <- input$myInput
     xlim <- c(0,25)
+    xtol <- (xlim[2] - xlim[1]) * 0.01
     ylim <- c(0,50)
+    ytol <- (ylim[2] - ylim[1]) * 0.01
     if(length(dat$x) > 1) {
         x <- unlist(dat$x)
         y <- unlist(dat$y)
@@ -39,11 +66,13 @@ function(input, output, session) {
                         xpts <- c(x[ind - 1], x[ind])
                         ypts <- c(y[ind - 1], y[ind])
                     } else if(x[ind] > z && x[ind - 1] < z) {
-                        xpts <- c(x[ind - 1], x[ind])
-                        ypts <- c(y[ind - 1], y[ind])
+                        pts <- employTol(ind, x, y, xtol, ytol, up=FALSE)
+                        xpts <- pts$x
+                        ypts <- pts$y
                     } else {
-                        xpts <- c(x[ind], x[ind + 1])
-                        ypts <- c(y[ind], y[ind + 1])
+                        pts <- employTol(ind, x, y, xtol, ytol)
+                        xpts <- pts$x
+                        ypts <- pts$y
                     }
                     if(xpts[1] == xpts[2]) return(mean(ypts))
                     else {
@@ -63,6 +92,15 @@ function(input, output, session) {
         plot(x, y, type='n', ylim=ylim, xlim=xlim)
         legend('topleft', legend=c('as drawn', 'interpolated'), lty=c(1, NA), pch=c(NA, 19), bty='n')
     }
+  })
+  
+  output$multipointCorrection <- renderTable({
+    vals <- input$lower
+    vals.tab <- sliderTable(vals)
+    for(i in 3:6) vals.tab[i] <- as.numeric(vals.tab[,i]) 
+    vals.tab$high.80 <- round(vals.tab[,'ml'] + ((vals.tab[,'high'] - vals.tab[,'ml']) * (80/vals.tab[,'confidence'])))
+    vals.tab$low.80 <- round(vals.tab[,'ml'] - ((vals.tab[,'ml'] - vals.tab[,'low']) * (80/vals.tab[,'confidence'])))
+    vals.tab
   })
 
   observeEvent(input$lower, {

@@ -92,8 +92,15 @@ ui <- fluidPage(
     # Application title
     h2(style='clear:both;text-align:center;', "Input Sliders For Expert Elicitation"),
     div(style='clear:both;',
-        p(class='text-bold', '4-point elicitation with distinct steps to focus first on range, then on most-likely, and finally on confidence.'),
-        multiPointSliderInput('lower', '', min=0, max=500, step=1, height=400, valuelist=valuelistA, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
+        column(7,
+            p(class='text-bold', '4-point elicitation with distinct steps to focus first on range, then on most-likely, and finally on confidence.'),
+            multiPointSliderInput('lower', '', min=0, max=500, step=1, height=400, valuelist=valuelistA, ylab='Custom Scale Of Elicitation, values', col=colorRampPalette(rev(c('#0044b2','#c6d7f2'))))
+        ),
+        column(5,
+            p(class='text-bold', 'The server sees the H-L-ML and confidence values. In this table the last two columns scale the user\'s high and low values to a fixed 80% credible interval.'),
+            tags$style('#multipointCorrection table {font-size:0.8em;}'),
+            tableOutput('multipointCorrection')
+        )
     ),
     div(style='clear:both;',
         p(class='text-bold', 'These sliders are linked in the server. The above sliders appear in the input below as disabled reference values.'),
