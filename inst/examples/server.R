@@ -13,6 +13,7 @@ employTol <- function(i, vx, vy, xtol, ytol, up=TRUE) {
             newi <- min(i + j, length(vx))
             xpts <- c(vx[i], vx[newi])
             ypts <- c(vy[i], vy[newi])
+            if(newi == length(vx)) break
         }
     } else {
         xpts <- c(vx[i - j], vx[i])
@@ -22,6 +23,7 @@ employTol <- function(i, vx, vy, xtol, ytol, up=TRUE) {
             newi <- max(i - j, 1)
             xpts <- c(vx[newi], vx[i])
             ypts <- c(vy[newi], vy[i])
+            if(newi == 1) break
         }
     }
     list(x=xpts, y=ypts)
