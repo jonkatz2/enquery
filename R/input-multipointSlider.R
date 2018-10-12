@@ -33,6 +33,10 @@ multiPointSliderInput <- function(
     if(missing(inputId)) stop('Must supply inputId.')
     if(missing(valuelist)) stop('Must supply valuelist.')
     if(!length(names(valuelist))) stop('valuelist should be a named list.')
+    if(length(valuelist$step)) {
+        activestep <- valuelist$step
+        valuelist <- valuelist[names(valuelist) != 'step']
+    } else activestep <- NULL
     grouplabels <- names(valuelist)
     groupnames <- lapply(valuelist, names)
     if(!any(unlist(lapply(groupnames, length)))) stop('all values and list elements in valuelist must be named.')
@@ -169,29 +173,42 @@ multiPointSliderInput <- function(
     } else legend <- NULL
     # A nav above the input has buttons for the four steps
     if(confidence) {
+        if(length(activestep)) {
+            stepclass <- c('highlow', 'ml', 'confidence', 'validate') 
+            active <- stepclass == activestep
+            stepclass[active] <- 'active'
+            stepclass[!active] <- ''
+        } else stepclass <- c('active', '', '', '')
         buttons <- tags$nav(class="navbar",
 #          tags$p(class="navbar-brand", "Steps"),
           tags$div(class="collapse navbar-collapse",
             tags$div(class="navbar-nav", `data-parent`=inputId,
-              tags$a(class="nav-item nav-link active", style="margin-right:-4px;", onclick="stepseq()", `data-step`="highlow", "Step 1: Set High and Low"),
-              tags$a(class="step-ml nav-item nav-link", style="margin-right:-4px;", onclick="stepseq()", `data-step`="ml", "Step 2: Set Most Likely"),
-              tags$a(class="nav-item nav-link", style="margin-right:-4px;", `data-step`="confidence", onclick="stepseq()", "Step 3: Set Confidence"),
-              tags$a(class="nav-item nav-link", onclick="stepseq()", `data-step`="validate", "Step 4: Validate")
+              tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stepseq()", `data-step`="highlow", "Step 1: Set High and Low"),
+              tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stepseq()", `data-step`="ml", "Step 2: Set Most Likely"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[3]), style="margin-right:-4px;", `data-step`="confidence", onclick="stepseq()", "Step 3: Set Confidence"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[4]), onclick="stepseq()", `data-step`="validate", "Step 4: Validate")
             )
           )
         ) 
     } else {
+        if(length(activestep)) {
+            stepclass <- c('highlow', 'ml', 'validate') 
+            active <- stepclass == activestep
+            stepclass[active] <- 'active'
+            stepclass[!active] <- ''
+        } else stepclass <- c('active', '', '')
         buttons <- tags$nav(class="navbar",
 #          tags$p(class="navbar-brand", "Steps"),
           tags$div(class="collapse navbar-collapse",
             tags$div(class="navbar-nav", `data-parent`=inputId,
-              tags$a(class="nav-item nav-link active", style="margin-right:-4px;", onclick="stepseq()", `data-step`="highlow", "Step 1: Set High and Low"),
-              tags$a(class="step-ml nav-item nav-link", style="margin-right:-4px;", onclick="stepseq()", `data-step`="ml", "Step 2: Set Most Likely"),
-              tags$a(class="nav-item nav-link", onclick="stepseq()", `data-step`="validate", "Step 3: Validate")
+              tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stepseq()", `data-step`="highlow", "Step 1: Set High and Low"),
+              tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stepseq()", `data-step`="ml", "Step 2: Set Most Likely"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[3]), onclick="stepseq()", `data-step`="validate", "Step 3: Validate")
             )
           )
         )
-    }    
+    }  
+    if(!length(activestep)) activestep <- 'highlow'
     # The type key is used by the input binding find method
     slidertag <- tags$div(id=inputId, 
         type = 'multipointslider',
@@ -200,7 +217,8 @@ multiPointSliderInput <- function(
         buttons,
         legend,
         contents,
-        tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );$( '#", inputId, "' ).find('a').first().click();"))
+        tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );setstep( '#", inputId, "', '", activestep,"' );"))
+        #tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );$( '#", inputId, "' ).find('a.active').first().click();"))
     )
     
     htmltools::htmlDependencies(slidertag) <- jqueryDep

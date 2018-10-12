@@ -32,10 +32,18 @@ $.extend(multipointsliderBinding, {
         pod[label] = ( { "data":grp, "conf":conf } );
       };
     });
+    var navactive = $(el).find( ".nav-link.active" ).data("step");
+    pod["step"] = navactive
     return pod;
   },
   setValue: function(el, valuelist) {
     var $id = "#" + $(el).attr("id");
+    if( valuelist.hasOwnProperty("step") ) {
+        var step = valuelist.step;
+        $(el).find("a").each(function() { $(this).removeClass("active") });
+        setstep(id, step);
+        delete valuelist.step;
+    };
     for (var key in valuelist) {
       if (valuelist.hasOwnProperty(key)) {
         var sval = valuelist[key];
@@ -258,7 +266,6 @@ $(document).ready(function() {
         var par = $(event.target).parent();
         par.find("a").each(function() { $(this).removeClass("active") });
         $(event.target).addClass(" active");
-        debugger;
         var id = "#" + par.data("parent");
         var step = $(event.target).data("step");
         
@@ -281,11 +288,11 @@ $(document).ready(function() {
 });
 
 function stepseq() {
+    debugger;
     $(".multipointslider-input a").click(function(event) {
         var par = $(event.target).parent();
         par.find("a").each(function() { $(this).removeClass("active") });
         $(event.target).addClass(" active");
-        debugger;
         var id = "#" + par.data("parent");
         var step = $(event.target).data("step");
         
@@ -306,6 +313,31 @@ function stepseq() {
         };
     });
 };
+
+function setstep(id, step) {
+    debugger;
+    $(id).find("a").each(function() { $(this).removeClass("active") });
+    if(step == "ml") {
+        $(id).find('*[data-step="ml"]').addClass(" active").click();
+        enableML(id);
+        disableHighLow(id);
+        disableConfidence(id);
+    } else if(step == "confidence") {
+        $(id).find('*[data-step="confidence"]').addClass(" active").click();
+        enableConfidence(id);
+        enableML(id);
+        disableHighLow(id);
+    } else if(step == "highlow") {
+        $(id).find('*[data-step="highlow"]').addClass(" active").click();
+        enableHighLow(id);
+        disableML(id);
+        disableConfidence(id);
+    } else if(step == "validate") {
+        $(id).find('*[data-step="validate"]').addClass(" active").click();
+        validateFPS(id);
+    };
+};
+
 
 // check against several variations on true
 function isTrue( x ) {

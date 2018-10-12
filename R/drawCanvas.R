@@ -55,13 +55,16 @@ drawLineInput <- function(inputId, xlim, ylim, valuelist, xlab="", ylab="", px.w
 #                    else ngcorrection <- ylim$min
                     z <- ht - ( (y - ylim$min)/(ylim$max - ylim$min) * ht)
                 } else {
-                    z <- y
+                    if(length(y) > 1) z <- y
+                    else z <- list(y)
                 }
-                jsonlite::toJSON(z, auto_unbox=TRUE, null='null')
+                z #jsonlite::toJSON(z, auto_unbox=length(z) > 1, null='null')
             }, simplify=FALSE)
-            default <- as.character(toJSON(valuelist, auto_unbox=TRUE, null='null'))
-            default <- gsub('"\\[', '\\[', default)
-            default <- gsub('\\]"', '\\]', default)
+            default <- as.character(toJSON(valuelist, auto_unbox=length(valuelist$x) > 1, null='null'))
+            valuelist <- sapply(valuelist, toJSON, auto_unbox=length(valuelist$x) > 1, null='null')
+            valuelist <- sapply(valuelist, as.character)
+#            default <- gsub('"\\[', '\\[', default)
+#            default <- gsub('\\]"', '\\]', default)
             default <- HTML(default)
         }
     } else {
@@ -147,9 +150,9 @@ dragCanvas <- function(inputId, width, height, valuelist) {
               ", inputId, "paint = false;
             });
             
-            var ", inputId, "clickX = ", valuelist$x, ";
-            var ", inputId, "clickY = ", valuelist$y, ";
-            var ", inputId, "clickDrag = ", valuelist$d, ";
+            var ", inputId, "clickX = ", valuelist[['x']], ";
+            var ", inputId, "clickY = ", valuelist[['y']], ";
+            var ", inputId, "clickDrag = ", valuelist[['d']], ";
             var ", inputId, "paint;
 
             function ", inputId, "addClick(x, y, dragging) {
