@@ -48,6 +48,7 @@ multiPointSliderInput <- function(
     
     ticklabs <- pretty(min:max)
     mintick <- ticklabs[1]
+    maxtick <- ticklabs[length(ticklabs)]
     ticklabs <- ticklabs[-1]
     ticks <- lapply(rev(ticklabs), function(x) tags$div(class="tick", style=paste0("height: ", height/length(ticklabs), "px;padding-right:10px;text-align:right;"),tags$p(x)))
     ticks <- c(ticks, list(tags$div(style="padding:0px 10px;text-align:right;",tags$p(mintick))))
@@ -84,16 +85,21 @@ multiPointSliderInput <- function(
         spanstyle <- paste0(spanstyle, collapse='')
         sublist <- valuelist[[y]]
         if(!is.list(sublist)) stop('valuelist must be a list of lists of vectors, or a list of list of lists.')
+        confselected <- sublist$conf
+        if(length(sublist$data)) sublist <- sublist$data
         # each set of sliders is in a .multipointslider-vertical span 
         subspans <- lapply(1:length(sublist), function(z) {
             livenumber <- "0"
             if(z == length(sublist) && live.numbers) livenumber <- "1"
-            
-            if(!is.na(sublist[[z]]['disabled'])) disabled <- unlist(sublist[[z]]['disabled']) 
-            if(!is.na(sublist[[z]]['reference'])) reference <- unlist(sublist[[z]]['reference'])
+            if(length(sublist[[z]]['disabled'])) {
+                if(!is.na(sublist[[z]]['disabled'])) disabled <- unlist(sublist[[z]]['disabled']) 
+            }
+            if(length(sublist[[z]]['reference'])) {
+                if(!is.na(sublist[[z]]['reference'])) reference <- unlist(sublist[[z]]['reference'])
+            }
             tags$span(class="multipointslider-vertical", 
-                tags$span(id=paste0(inputId, "highlow", x, "_", z-1), class=paste0("highlow multipointslider", z-1), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-label`=grouplabels[y], `data-name`=groupnames[z], `data-frozen`="false", `data-live`=livenumber, paste0(unlist(sublist[[z]][c('low','high')]), collapse=',')),
-                tags$span(id=paste0(inputId, "ml", x, "_", z-1), class=paste0("ml multipointslider", z-1, " vis-hide"), style=paste0("height:",height,"px;"), `data-min`=min, `data-max`=max, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-name`=groupnames[z], `data-live`=livenumber, unlist(sublist[[z]]['ml']))
+                tags$span(id=paste0(inputId, "highlow", x, "_", z-1), class=paste0("highlow multipointslider", z-1), style=paste0("height:",height,"px;"), `data-min`=mintick, `data-max`=maxtick, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-label`=grouplabels[y], `data-name`=groupnames[z], `data-frozen`="false", `data-live`=livenumber, paste0(unlist(sublist[[z]][c('low','high')]), collapse=',')),
+                tags$span(id=paste0(inputId, "ml", x, "_", z-1), class=paste0("ml multipointslider", z-1, " vis-hide"), style=paste0("height:",height,"px;"), `data-min`=mintick, `data-max`=maxtick, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-name`=groupnames[z], `data-live`=livenumber, unlist(sublist[[z]]['ml']))
             )
         })
         # The live number display only updates from the right-most slider of each sliderpod
@@ -115,8 +121,18 @@ multiPointSliderInput <- function(
         } else live.number.display <- div()
         
         # confidence
-        if(confidence) conf <- tags$select(class="vis-hide", tags$option(value='', ''), tags$option(value=55, '55'), tags$option(value=60, '60'), tags$option(value=65, '65'), tags$option(value=70, '70'), tags$option(value=75, '75'), tags$option(value=80, '80'), tags$option(value=85, '85'), tags$option(value=90, '90'), tags$option(value=95, '95'))
-        else conf <- div()
+        if(confidence) {
+            if(length(confselected)) confselected <- as.numeric(confselected)
+            opts <- lapply(seq(55, 95, by=5), function(o) {
+                opt.tag <- tags$option(value=o, o)
+                if(length(confselected)) {
+                    if(confselected == o) opt.tag <- tags$option(value=o, selected="selected", o)
+                } 
+                opt.tag
+            })
+            opts <- c(list(class="vis-hide", tags$option(value='','')), opts)
+            conf <- do.call(tags$select, opts)
+        } else conf <- div()
         
         # the .multipointslider-vertical spans are nested in .sliderpod spans
         tags$span(style=paste0("width:", widest, "em;min-width:6em;"),
@@ -157,10 +173,10 @@ multiPointSliderInput <- function(
 #          tags$p(class="navbar-brand", "Steps"),
           tags$div(class="collapse navbar-collapse",
             tags$div(class="navbar-nav", `data-parent`=inputId,
-              tags$a(class="nav-item nav-link active", style="margin-right:-4px;", `data-step`="highlow", "Step 1: Set High and Low"),
-              tags$a(class="step-ml nav-item nav-link", style="margin-right:-4px;", `data-step`="ml", "Step 2: Set Most Likely"),
-              tags$a(class="nav-item nav-link", style="margin-right:-4px;", `data-step`="confidence", "Step 3: Set Confidence"),
-              tags$a(class="nav-item nav-link", `data-step`="validate", "Step 4: Validate")
+              tags$a(class="nav-item nav-link active", style="margin-right:-4px;", onclick="stepseq()", `data-step`="highlow", "Step 1: Set High and Low"),
+              tags$a(class="step-ml nav-item nav-link", style="margin-right:-4px;", onclick="stepseq()", `data-step`="ml", "Step 2: Set Most Likely"),
+              tags$a(class="nav-item nav-link", style="margin-right:-4px;", `data-step`="confidence", onclick="stepseq()", "Step 3: Set Confidence"),
+              tags$a(class="nav-item nav-link", onclick="stepseq()", `data-step`="validate", "Step 4: Validate")
             )
           )
         ) 
@@ -169,9 +185,9 @@ multiPointSliderInput <- function(
 #          tags$p(class="navbar-brand", "Steps"),
           tags$div(class="collapse navbar-collapse",
             tags$div(class="navbar-nav", `data-parent`=inputId,
-              tags$a(class="nav-item nav-link active", style="margin-right:-4px;", `data-step`="highlow", "Step 1: Set High and Low"),
-              tags$a(class="step-ml nav-item nav-link", style="margin-right:-4px;", `data-step`="ml", "Step 2: Set Most Likely"),
-              tags$a(class="nav-item nav-link", `data-step`="validate", "Step 3: Validate")
+              tags$a(class="nav-item nav-link active", style="margin-right:-4px;", onclick="stepseq()", `data-step`="highlow", "Step 1: Set High and Low"),
+              tags$a(class="step-ml nav-item nav-link", style="margin-right:-4px;", onclick="stepseq()", `data-step`="ml", "Step 2: Set Most Likely"),
+              tags$a(class="nav-item nav-link", onclick="stepseq()", `data-step`="validate", "Step 3: Validate")
             )
           )
         )
@@ -184,7 +200,7 @@ multiPointSliderInput <- function(
         buttons,
         legend,
         contents,
-        tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );"))
+        tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );$( '#", inputId, "' ).find('a').first().click();"))
     )
     
     htmltools::htmlDependencies(slidertag) <- jqueryDep
@@ -215,6 +231,7 @@ sliderTable <- function(x) {
     hlml
 }
 
+# convert a data.frame to a list
 sliderList <- function(x) {
     sapply(x$name, function(y) {
         slids <- sapply(x[x$name == y, 'label'], function(z) {

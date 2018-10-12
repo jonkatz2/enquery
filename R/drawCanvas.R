@@ -20,7 +20,7 @@ makeAxis <- function(range, height, width) {
     list(ticks, tickpct, tickchar, tickrange)
 }
 
-drawLineInput <- function(inputId, xlim, ylim, xlab="", ylab="", px.wide, px.high, width) {
+drawLineInput <- function(inputId, xlim, ylim, valuelist, xlab="", ylab="", px.wide, px.high, width) {
     xtick <- makeAxis(xlim, width=px.wide)
     ytick <- makeAxis(ylim, height=px.high)
     xtickrange <- xtick[[4]]
@@ -35,19 +35,49 @@ drawLineInput <- function(inputId, xlim, ylim, xlab="", ylab="", px.wide, px.hig
         background-image: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, #00000000 1px, #00000000 ', ytick[[2]], '%), repeating-linear-gradient(to right, #ddd, #ddd 1px, #00000000 1px, #00000000 ', xtick[[2]], '%);
       }'
     )
-    
+
+#    tags$div(class="drawLine-y-lab", style=paste0("height:", px.high, "px;"), p(style=paste0("height:", px.high, "px;width:", px.high,"px;"), ylab)),
+    if(!missing(valuelist)) {
+        if(!length(valuelist$x)) {
+            default <- HTML(toJSON(valuelist, auto_unbox=TRUE, null='null'))
+            valuelist <- list(x="new Array()", y="new Array()", d="new Array()")
+        } else {
+            valuelist <- sapply(c('x', 'y', 'd'), function(x) {
+                y <- unlist(valuelist[[x]]) 
+                ht <- px.high
+                wd <- px.wide
+                xlim <- list(min=xtickrange[1], max=xtickrange[2])
+                ylim <- list(min=ytickrange[1], max=ytickrange[2])
+                if(x=='x') {
+                    z <- y/(xlim$max - xlim$min) * wd + xlim$min
+                } else if(x=='y') {
+#                    if(ylim$min < 0) ngcorrection <- abs(ylim$min)/(ylim$max - ylim$min) * ht
+#                    else ngcorrection <- ylim$min
+                    z <- ht - ( (y - ylim$min)/(ylim$max - ylim$min) * ht)
+                } else {
+                    z <- y
+                }
+                jsonlite::toJSON(z, auto_unbox=TRUE, null='null')
+            }, simplify=FALSE)
+            default <- HTML(toJSON(valuelist, auto_unbox=TRUE, null='null'))
+        }
+    } else {
+        default <- HTML('{"x":[], "y":[], "d":[]}')
+        valuelist <- list(x="new Array()", y="new Array()", d="new Array()")
+    }
     xpad <- ytick[[3]] * 10 + 10 + as.logical(nchar(ylab)) * 65
     #"px;width:", xpad + px.wide + 16, 
     canvastag <- tags$div(style=paste0("width:", width, ";"), class="drawLine-input", type="drawLine-input",
         tags$style(css),
         tags$button(id=paste0(inputId, "clearCanvas"), "Clear"),
         tags$div(
-            tags$div(class="drawLine-y-lab", style=paste0("height:", px.high, "px;"), p(style=paste0("height:", px.high, "px;width:", px.high,"px;"), ylab)),
+            tags$div(class="drawLine-y-lab", style=paste0("height:", px.high, "px;"), p(style=paste0("px;width:", px.high,"px;left:-", px.high/2, "px;top:", px.high/2,"px;"), ylab)),
             tags$div(class="drawLine-y-axis", ytick[[1]]),
-            tags$div(id=inputId, class="drawLine-container", `data-value`=HTML('{"x":[], "y":[], "d":[]}'), `data-dims`=HTML(paste0('{"x":', px.wide, ',"y":', px.high, '}')), `data-ylim`=HTML(paste0('{"min":', ytickrange[1], ',"max":', ytickrange[2], '}')), `data-xlim`=HTML(paste0('{"min":', xtickrange[1], ',"max":', xtickrange[2], '}'))),
+            tags$div(id=inputId, class="drawLine-container", `data-value`=default, `data-dims`=HTML(paste0('{"x":', px.wide, ',"y":', px.high, '}')), `data-ylim`=HTML(paste0('{"min":', ytickrange[1], ',"max":', ytickrange[2], '}')), `data-xlim`=HTML(paste0('{"min":', xtickrange[1], ',"max":', xtickrange[2], '}'))),
             tags$div(class="drawLine-x-axis", style=paste0("padding-left:", xpad, "px;"), xtick[[1]]),
             tags$div(class="drawLine-x-lab", style=paste0("padding-left:", xpad, "px;width:", px.wide,"px;"), p(xlab)),
-            dragCanvas(inputId, width=px.wide,height=px.high)
+            dragCanvas(inputId, width=px.wide, height=px.high, valuelist=valuelist),
+            tags$script(paste0(inputId, "redraw();"))
         )
     )
     htmltools::htmlDependencies(canvastag) <- jqueryDep
@@ -67,7 +97,7 @@ updateDrawLineInput <- function(session, inputId, label=NULL, valuelist) {
 
 
 
-dragCanvas <- function(inputId, width, height) {
+dragCanvas <- function(inputId, width, height, valuelist) {
     tags$script(type="text/javascript",
         HTML(paste0("
             var ", inputId, "canvasWidth = ", width, ";
@@ -110,9 +140,9 @@ dragCanvas <- function(inputId, width, height) {
               ", inputId, "paint = false;
             });
             
-            var ", inputId, "clickX = new Array();
-            var ", inputId, "clickY = new Array();
-            var ", inputId, "clickDrag = new Array();
+            var ", inputId, "clickX = ", valuelist$x, ";
+            var ", inputId, "clickY = ", valuelist$y, ";
+            var ", inputId, "clickDrag = ", valuelist$d, ";
             var ", inputId, "paint;
 
             function ", inputId, "addClick(x, y, dragging) {

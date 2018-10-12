@@ -54,6 +54,7 @@
     background-color: #ccc;
     color: rgb(51, 51, 51);
     white-space: nowrap;
+    cursor: pointer;
 }
 .multipointslider-input .navbar-nav {
     padding:1em;
@@ -219,16 +220,17 @@
     float: left;
     width: 3em;
     text-align: center;
-    z-index: -1;
+/*    z-index: -1;*/
 }
 
 .drawLine-y-lab p {
     -ms-transform: rotate(270deg); /* IE 9 */
     -webkit-transform: rotate(270deg); /* Safari 3-8 */
     transform: rotate(270deg);
-    margin: 0;
-    text-align: center;
-    z-index: -1;
+/*    margin: 0;*/
+/*    text-align: center;*/
+/*    z-index: -1;*/
+    position: relative;
 }
 
 .drawLine-input {

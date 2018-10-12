@@ -6,7 +6,7 @@ Date: 2018-08-30
 Author: Jon Katz
 Maintainer: Jon Katz <jonkatz4@gmail.com>
 Description: jQuery-ui sliders for 3-point and 4-point elicitation within shiny. 
-Imports: shiny (>= 0.11), htmltools
+Imports: shiny (>= 0.11), htmltools, jsonlite
 URL: https://jonkatz2.github.io/enquery
 BugReports: https://github.com/jonkatz2/enquery/issues
 License: GPL-3

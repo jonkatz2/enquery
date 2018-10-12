@@ -1,4 +1,6 @@
 
+
+
 var multipointsliderBinding = new Shiny.InputBinding();
 
 $.extend(multipointsliderBinding, {
@@ -11,15 +13,15 @@ $.extend(multipointsliderBinding, {
   },
   
   getValue: function(el) {
-    var pod = {}
+    var pod = {};
     $(el).find( "span" ).each( function( i ) {
-      var grp = {}
+      var grp = {};
       var label = $(this).find("p.x-axislabel").text();
       if(label.length) {
         $(this).find( ".sliderpod .multipointslider-vertical" ).each(function( ) {
           if( $(this).find(".highlow").length ) {
             var name = $(this).find(".highlow").data("name");
-            var slide = {}
+            var slide = {};
             slide.high =  $(this).find(".highlow").slider("values", 1);
             slide.low = $(this).find(".highlow").slider("values", 0);
             slide.ml = $(this).find(".ml").slider("value");
@@ -32,7 +34,6 @@ $.extend(multipointsliderBinding, {
     });
     return pod;
   },
-  
   setValue: function(el, valuelist) {
     var $id = "#" + $(el).attr("id");
     for (var key in valuelist) {
@@ -257,7 +258,7 @@ $(document).ready(function() {
         var par = $(event.target).parent();
         par.find("a").each(function() { $(this).removeClass("active") });
         $(event.target).addClass(" active");
-        
+        debugger;
         var id = "#" + par.data("parent");
         var step = $(event.target).data("step");
         
@@ -278,6 +279,33 @@ $(document).ready(function() {
         };
     });
 });
+
+function stepseq() {
+    $(".multipointslider-input a").click(function(event) {
+        var par = $(event.target).parent();
+        par.find("a").each(function() { $(this).removeClass("active") });
+        $(event.target).addClass(" active");
+        debugger;
+        var id = "#" + par.data("parent");
+        var step = $(event.target).data("step");
+        
+        if(step == "ml") {
+            enableML(id);
+            disableHighLow(id);
+            disableConfidence(id);
+        } else if(step == "confidence") {
+            enableConfidence(id);
+            enableML(id);
+            disableHighLow(id);
+        } else if(step == "highlow") {
+            enableHighLow(id);
+            disableML(id);
+            disableConfidence(id);
+        } else if(step == "validate") {
+            validateFPS(id);
+        };
+    });
+};
 
 // check against several variations on true
 function isTrue( x ) {
@@ -452,7 +480,7 @@ $.extend(drawlineinputBinding, {
     };
     if(valuelist.hasOwnProperty('y')) {
       var clickY = valuelist.y.map(function(e){
-          return ht - ( e/(ylim.max - ylim.min) * ht ) + ylim.min;
+          return ht - ( (e - ylim.min)/(ylim.max - ylim.min) * ht );
       });
     };
     
@@ -519,4 +547,4 @@ Shiny.inputBindings.register(drawlineinputBinding)
 
 
 
-
+//# sourceURL=enquery.js
