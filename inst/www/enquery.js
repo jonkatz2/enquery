@@ -475,7 +475,7 @@ $.extend(drawlineinputBinding, {
     var xlim = $(el).data("xlim");
     if(valuelist.hasOwnProperty('x')) {
       var clickX = valuelist.x.map(function(e){
-          return e/(xlim.max - xlim.min) * wd + xlim.min;
+          return (e - xlim.min)/(xlim.max - xlim.min) * wd;
       });
     };
     if(valuelist.hasOwnProperty('y')) {

@@ -20,7 +20,7 @@ makeAxis <- function(range, height, width) {
     list(ticks, tickpct, tickchar, tickrange)
 }
 
-drawLineInput <- function(inputId, xlim, ylim, valuelist, xlab="", ylab="", px.wide, px.high, width) {
+drawLineInput <- function(inputId, xlim, ylim, valuelist, xlab="", ylab="", px.wide, px.high, redrawn=FALSE, width) {
     xtick <- makeAxis(xlim, width=px.wide)
     ytick <- makeAxis(ylim, height=px.high)
     xtickrange <- xtick[[4]]
@@ -49,7 +49,7 @@ drawLineInput <- function(inputId, xlim, ylim, valuelist, xlab="", ylab="", px.w
                 xlim <- list(min=xtickrange[1], max=xtickrange[2])
                 ylim <- list(min=ytickrange[1], max=ytickrange[2])
                 if(x=='x') {
-                    z <- y/(xlim$max - xlim$min) * wd + xlim$min
+                    z <- (y - xlim$min)/(xlim$max - xlim$min) * wd
                 } else if(x=='y') {
 #                    if(ylim$min < 0) ngcorrection <- abs(ylim$min)/(ylim$max - ylim$min) * ht
 #                    else ngcorrection <- ylim$min
@@ -59,7 +59,10 @@ drawLineInput <- function(inputId, xlim, ylim, valuelist, xlab="", ylab="", px.w
                 }
                 jsonlite::toJSON(z, auto_unbox=TRUE, null='null')
             }, simplify=FALSE)
-            default <- HTML(toJSON(valuelist, auto_unbox=TRUE, null='null'))
+            default <- as.character(toJSON(valuelist, auto_unbox=TRUE, null='null'))
+            default <- gsub('"\\[', '\\[', default)
+            default <- gsub('\\]"', '\\]', default)
+            default <- HTML(default)
         }
     } else {
         default <- HTML('{"x":[], "y":[], "d":[]}')
@@ -67,6 +70,10 @@ drawLineInput <- function(inputId, xlim, ylim, valuelist, xlab="", ylab="", px.w
     }
     xpad <- ytick[[3]] * 10 + 10 + as.logical(nchar(ylab)) * 65
     #"px;width:", xpad + px.wide + 16, 
+    
+#    if(!redrawn) initscript <- dragCanvas(inputId, width=px.wide, height=px.high, valuelist=valuelist)
+#    else initscript <- tags$script()
+    
     canvastag <- tags$div(style=paste0("width:", width, ";"), class="drawLine-input", type="drawLine-input",
         tags$style(css),
         tags$button(id=paste0(inputId, "clearCanvas"), "Clear"),

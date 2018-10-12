@@ -57,7 +57,7 @@ multiPointSliderInput <- function(
     
     divClass <- "multipointslider-input"
     # width based on how many sliders are in a .sliderpod
-    widest <- max(unlist(lapply(valuelist, length))) * 3.8
+    widest <- max(unlist(lapply(valuelist, length))) * 2.8
     spanstyle <- paste0("height:",height,"px;width:", widest, "em;min-width:6em;")
     # show/hide lines, background transparency
     if(bg.lines) {
