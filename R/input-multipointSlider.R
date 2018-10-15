@@ -83,10 +83,10 @@ multiPointSliderInput <- function(
     spanstyle <- paste0("height:",height,"px;width:", widest, "em;min-width:6em;")
     # show/hide lines, background transparency
     if(bg.lines) {
-        if(bg.transparent) spanstyle <- c(spanstyle, paste0("background: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, #00000000 1px, #00000000 ", tickpct, "%);"))
-        else spanstyle <- c(spanstyle, paste0("background: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, #fff 1px, #fff ", tickpct, "%);"))
+        if(bg.transparent) spanstyle <- c(spanstyle, paste0("background: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, transparent 1px, transparent ", tickpct, "%);background-image: repeating-linear-gradient(0deg, #ddd, #ddd 1px, transparent 1px, transparent ", tickpct, "%);"))
+        else spanstyle <- c(spanstyle, paste0("background: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, #fff 1px, #fff ", tickpct, "%);background-image: repeating-linear-gradient(0deg, #ddd, #ddd 1px, #fff 1px, #fff ", tickpct, "%);"))
     } else {
-        if(bg.transparent) spanstyle <- c(spanstyle, "background:#00000000;")
+        if(bg.transparent) spanstyle <- c(spanstyle, "background:transparent;")
         else spanstyle <- c(spanstyle, "background:#fff;")
     }
     

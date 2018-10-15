@@ -20,7 +20,7 @@ makeAxis <- function(range, height, width) {
     list(ticks, tickpct, tickchar, tickrange)
 }
 
-drawLineInput <- function(inputId, xlim, ylim, valuelist, xlab="", ylab="", px.wide, px.high, redrawn=FALSE, width) {
+drawLineInput <- function(inputId, xlim, ylim, valuelist, xlab="", ylab="", px.wide, px.high, redrawn=FALSE, width, col.bg='transparent') {
     xtick <- makeAxis(xlim, width=px.wide)
     ytick <- makeAxis(ylim, height=px.high)
     xtickrange <- xtick[[4]]
@@ -31,8 +31,8 @@ drawLineInput <- function(inputId, xlim, ylim, valuelist, xlab="", ylab="", px.w
         width: ', px.wide, 'px;
         border: 1px solid black;
         margin: auto;
-        background: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, #00000000 1px, #00000000 ', ytick[[2]], '%), repeating-linear-gradient(to right, #ddd, #ddd 1px, #00000000 1px, #00000000 ', xtick[[2]], '%);
-        background-image: repeating-linear-gradient(to bottom, #ddd, #ddd 1px, #00000000 1px, #00000000 ', ytick[[2]], '%), repeating-linear-gradient(to right, #ddd, #ddd 1px, #00000000 1px, #00000000 ', xtick[[2]], '%);
+        background: repeating-linear-gradient(to bottom, #dddddd, #dddddd 1px, ', col.bg, ' 1px, ', col.bg, ' ',  ytick[[2]], '%), repeating-linear-gradient(to right, #ddd, #ddd 1px, ', col.bg, ' 1px, ', col.bg, ' ', xtick[[2]], '%);
+        background-image: repeating-linear-gradient(0deg, #dddddd, #dddddd 1px, ', col.bg, ' 1px, ', col.bg, ' ',  ytick[[2]], '%), repeating-linear-gradient(90deg, #ddd, #ddd 1px, ', col.bg, ' 1px, ', col.bg, ' ', xtick[[2]], '%);
       }'
     )
 
