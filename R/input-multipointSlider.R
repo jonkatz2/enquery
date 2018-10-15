@@ -39,10 +39,28 @@ multiPointSliderInput <- function(
     } else activestep <- NULL
     grouplabels <- names(valuelist)
     groupnames <- lapply(valuelist, names)
+    if(all(groupnames[[1]] %in% c('data', 'conf'))) {
+        groupnames <- lapply(valuelist, function(x) names(x$data))
+        hasdata <- TRUE
+    } else hasdata <- FALSE
     if(!any(unlist(lapply(groupnames, length)))) stop('all values and list elements in valuelist must be named.')
     if(!any(unlist(lapply(groupnames, function(x) {all(x %in% groupnames[[1]]) && all(groupnames[[1]] %in% x)})))) stop('each element of valuelist should be the same length and have the same names.')
     groupnames <- groupnames[[1]]
-    valuelist <- sapply(valuelist, function(x) x[groupnames], simplify=FALSE)
+    if(hasdata) {
+        valuelist <- sapply(valuelist, function(x) {
+            if(is.list(x$data)) {
+                z <- sapply(x, function(y) {
+                    sapply(y, unlist, simplify=FALSE)
+                }, simplify=FALSE)
+                z$conf <- x$conf
+                z
+            } else x$data[groupnames]
+        }, simplify=FALSE)
+        valuelist <- sapply(valuelist, function(x) {
+            if(length(x$conf)) x
+            else x$data
+        }, simplify=FALSE)
+    } else valuelist <- sapply(valuelist, function(x) x[groupnames], simplify=FALSE)
     
     if(is.function(col)) col <- col(length(groupnames))
     else col <- col[1:length(groupnames)]
@@ -126,12 +144,13 @@ multiPointSliderInput <- function(
         
         # confidence
         if(confidence) {
-            if(length(confselected)) confselected <- as.numeric(confselected)
+            if(length(confselected)) 
+                if(!is.na(confselected)) confselected <- as.numeric(confselected)
             opts <- lapply(seq(55, 95, by=5), function(o) {
                 opt.tag <- tags$option(value=o, o)
                 if(length(confselected)) {
                     if(confselected == o) opt.tag <- tags$option(value=o, selected="selected", o)
-                } 
+                }
                 opt.tag
             })
             opts <- c(list(class="vis-hide", tags$option(value='','')), opts)

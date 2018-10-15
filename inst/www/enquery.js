@@ -34,8 +34,10 @@ $.extend(multipointsliderBinding, {
     });
     var navactive = $(el).find( ".nav-link.active" ).data("step");
     pod["step"] = navactive
+    console.log(pod);
     return pod;
   },
+  
   setValue: function(el, valuelist) {
     var $id = "#" + $(el).attr("id");
     if( valuelist.hasOwnProperty("step") ) {
