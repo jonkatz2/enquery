@@ -20,11 +20,14 @@ $.extend(multipointsliderBinding, {
       if(label.length) {
         $(this).find( ".sliderpod .multipointslider-vertical" ).each(function( ) {
           if( $(this).find(".highlow").length ) {
-            var name = $(this).find(".highlow").data("name");
+            var hl = $(this).find(".highlow");
+            var name = hl.data("name");
             var slide = {};
-            slide.high =  $(this).find(".highlow").slider("values", 1);
-            slide.low = $(this).find(".highlow").slider("values", 0);
+            slide.high =  hl.slider("values", 1);
+            slide.low = hl.slider("values", 0);
             slide.ml = $(this).find(".ml").slider("value");
+            slide.reference = hl.data("reference");
+            slide.disabled =  hl.data("disabled");
             grp[name] = ( slide );
           };
         });
@@ -34,7 +37,6 @@ $.extend(multipointsliderBinding, {
     });
     var navactive = $(el).find( ".nav-link.active" ).data("step");
     pod["step"] = navactive
-    console.log(pod);
     return pod;
   },
   
@@ -290,7 +292,6 @@ $(document).ready(function() {
 });
 
 function stepseq() {
-    debugger;
     $(".multipointslider-input a").click(function(event) {
         var par = $(event.target).parent();
         par.find("a").each(function() { $(this).removeClass("active") });
@@ -317,7 +318,6 @@ function stepseq() {
 };
 
 function setstep(id, step) {
-    debugger;
     $(id).find("a").each(function() { $(this).removeClass("active") });
     if(step == "ml") {
         $(id).find('*[data-step="ml"]').addClass(" active").click();
