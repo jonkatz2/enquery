@@ -35,18 +35,18 @@ $.extend(multipointsliderBinding, {
         pod[label] = ( { "data":grp, "conf":conf } );
       };
     });
-    var navactive = $(el).find( ".nav-link.active" ).data("step");
-    pod["step"] = navactive
+    var navactive = $(el).find( ".nav-link.active" ).data("stage");
+    pod["stage"] = navactive
     return pod;
   },
   
   setValue: function(el, valuelist) {
     var $id = "#" + $(el).attr("id");
-    if( valuelist.hasOwnProperty("step") ) {
-        var step = valuelist.step;
+    if( valuelist.hasOwnProperty("stage") ) {
+        var stage = valuelist.stage;
         $(el).find("a").each(function() { $(this).removeClass("active") });
-        setstep(id, step);
-        delete valuelist.step;
+        setstage(id, stage);
+        delete valuelist.stage;
     };
     for (var key in valuelist) {
       if (valuelist.hasOwnProperty(key)) {
@@ -264,78 +264,78 @@ function multipointslider( id ) {
   });
 };
 
-// march through the steps of a 4-point elicitation on nav click
+// march through the stages of a 4-point elicitation on nav click
 $(document).ready(function() {
     $(".multipointslider-input a").click(function(event) {
         var par = $(event.target).parent();
         par.find("a").each(function() { $(this).removeClass("active") });
         $(event.target).addClass(" active");
         var id = "#" + par.data("parent");
-        var step = $(event.target).data("step");
+        var stage = $(event.target).data("stage");
         
-        if(step == "ml") {
+        if(stage == "ml") {
             enableML(id);
             disableHighLow(id);
             disableConfidence(id);
-        } else if(step == "confidence") {
+        } else if(stage == "confidence") {
             enableConfidence(id);
             enableML(id);
             disableHighLow(id);
-        } else if(step == "highlow") {
+        } else if(stage == "highlow") {
             enableHighLow(id);
             disableML(id);
             disableConfidence(id);
-        } else if(step == "validate") {
+        } else if(stage == "validate") {
             validateFPS(id);
         };
     });
 });
 
-function stepseq() {
+function stageseq() {
     $(".multipointslider-input a").click(function(event) {
         var par = $(event.target).parent();
         par.find("a").each(function() { $(this).removeClass("active") });
         $(event.target).addClass(" active");
         var id = "#" + par.data("parent");
-        var step = $(event.target).data("step");
+        var stage = $(event.target).data("stage");
         
-        if(step == "ml") {
+        if(stage == "ml") {
             enableML(id);
             disableHighLow(id);
             disableConfidence(id);
-        } else if(step == "confidence") {
+        } else if(stage == "confidence") {
             enableConfidence(id);
             enableML(id);
             disableHighLow(id);
-        } else if(step == "highlow") {
+        } else if(stage == "highlow") {
             enableHighLow(id);
             disableML(id);
             disableConfidence(id);
-        } else if(step == "validate") {
+        } else if(stage == "validate") {
             validateFPS(id);
         };
     });
 };
 
-function setstep(id, step) {
+function setstage(id, stage) {
     $(id).find("a").each(function() { $(this).removeClass("active") });
-    if(step == "ml") {
-        $(id).find('*[data-step="ml"]').addClass(" active").click();
+    if(stage == "ml") {
+        $(id).find('*[data-stage="ml"]').addClass(" active").click();
         enableML(id);
         disableHighLow(id);
         disableConfidence(id);
-    } else if(step == "confidence") {
-        $(id).find('*[data-step="confidence"]').addClass(" active").click();
+    } else if(stage == "confidence") {
+        $(id).find('*[data-stage="confidence"]').addClass(" active").click();
         enableConfidence(id);
         enableML(id);
         disableHighLow(id);
-    } else if(step == "highlow") {
-        $(id).find('*[data-step="highlow"]').addClass(" active").click();
+    } else if(stage == "highlow") {
+        $(id).find('*[data-stage="highlow"]').addClass(" active").click();
         enableHighLow(id);
         disableML(id);
         disableConfidence(id);
-    } else if(step == "validate") {
-        $(id).find('*[data-step="validate"]').addClass(" active").click();
+    } else if(stage == "validate") {
+        $(id).find('*[data-stage="validate"]').addClass(" active").click();
         validateFPS(id);
     };
 };

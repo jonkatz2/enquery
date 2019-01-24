@@ -28,14 +28,14 @@ multiPointSliderInput <- function(
         missing(min), 
         missing(max), 
         missing(step)
-    )) stop('Must supply both min and max.') 
+    )) stop('Must supply min, max, and step.') 
     
     if(missing(inputId)) stop('Must supply inputId.')
     if(missing(valuelist)) stop('Must supply valuelist.')
     if(!length(names(valuelist))) stop('valuelist should be a named list.')
-    if(length(valuelist$step)) {
-        activestep <- valuelist$step
-        valuelist <- valuelist[names(valuelist) != 'step']
+    if(length(valuelist$stage)) {
+        activestep <- valuelist$stage
+        valuelist <- valuelist[names(valuelist) != 'stage']
     } else activestep <- NULL
     grouplabels <- names(valuelist)
     groupnames <- lapply(valuelist, names)
@@ -202,10 +202,10 @@ multiPointSliderInput <- function(
 #          tags$p(class="navbar-brand", "Steps"),
           tags$div(class="collapse navbar-collapse",
             tags$div(class="navbar-nav", `data-parent`=inputId,
-              tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stepseq()", `data-step`="highlow", "Step 1: Set High and Low"),
-              tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stepseq()", `data-step`="ml", "Step 2: Set Most Likely"),
-              tags$a(class=paste0("nav-item nav-link ", stepclass[3]), style="margin-right:-4px;", `data-step`="confidence", onclick="stepseq()", "Step 3: Set Confidence"),
-              tags$a(class=paste0("nav-item nav-link ", stepclass[4]), onclick="stepseq()", `data-step`="validate", "Step 4: Validate")
+              tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="highlow", "Step 1: Set High and Low"),
+              tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="ml", "Step 2: Set Most Likely"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[3]), style="margin-right:-4px;", `data-stage`="confidence", onclick="stageseq()", "Step 3: Set Confidence"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[4]), onclick="stageseq()", `data-stage`="validate", "Step 4: Validate")
             )
           )
         ) 
@@ -220,9 +220,9 @@ multiPointSliderInput <- function(
 #          tags$p(class="navbar-brand", "Steps"),
           tags$div(class="collapse navbar-collapse",
             tags$div(class="navbar-nav", `data-parent`=inputId,
-              tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stepseq()", `data-step`="highlow", "Step 1: Set High and Low"),
-              tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stepseq()", `data-step`="ml", "Step 2: Set Most Likely"),
-              tags$a(class=paste0("nav-item nav-link ", stepclass[3]), onclick="stepseq()", `data-step`="validate", "Step 3: Validate")
+              tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="highlow", "Step 1: Set High and Low"),
+              tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="ml", "Step 2: Set Most Likely"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[3]), onclick="stageseq()", `data-stage`="validate", "Step 3: Validate")
             )
           )
         )
@@ -236,7 +236,7 @@ multiPointSliderInput <- function(
         buttons,
         legend,
         contents,
-        tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );setstep( '#", inputId, "', '", activestep,"' );"))
+        tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );setstage( '#", inputId, "', '", activestep,"' );"))
         #tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );$( '#", inputId, "' ).find('a.active').first().click();"))
     )
     

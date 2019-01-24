@@ -125,17 +125,22 @@ dragCanvas <- function(inputId, width, height, valuelist) {
             ", inputId, "context = ", inputId, "canvas.getContext('2d');
             
             $('#", inputId, "canvas').mousedown(function(e){
-              var mouseX = e.pageX - this.offsetLeft;
-              var mouseY = e.pageY - this.offsetTop;
+              var rect = this.getBoundingClientRect();
+              var mouseX = e.pageX - rect.left;
+              var mouseY = e.pageY - rect.top;              
+//              var mouseX = e.pageX - this.offsetLeft;
+//              var mouseY = e.pageY - this.offsetTop;
               
               ", inputId, "paint = true;
-              ", inputId, "addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+              ", inputId, "addClick(mouseX, mouseY);
               ", inputId, "redraw();
             });
             
             $('#", inputId, "canvas').mousemove(function(e){
               if(", inputId, "paint){
-                ", inputId, "addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+                var rect = this.getBoundingClientRect();
+                ", inputId, "addClick(e.pageX - rect.left, e.pageY - rect.top, true);
+//                ", inputId, "addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
                 ", inputId, "redraw();
               };
             });
