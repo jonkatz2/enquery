@@ -126,8 +126,8 @@ dragCanvas <- function(inputId, width, height, valuelist) {
             
             $('#", inputId, "canvas').mousedown(function(e){
               var rect = this.getBoundingClientRect();
-              var mouseX = e.pageX - rect.left;
-              var mouseY = e.pageY - rect.top;              
+              var mouseX = e.pageX - rect.left - $(window).scrollLeft();
+              var mouseY = e.pageY - rect.top - $(window).scrollTop(); 
 //              var mouseX = e.pageX - this.offsetLeft;
 //              var mouseY = e.pageY - this.offsetTop;
               
@@ -139,7 +139,9 @@ dragCanvas <- function(inputId, width, height, valuelist) {
             $('#", inputId, "canvas').mousemove(function(e){
               if(", inputId, "paint){
                 var rect = this.getBoundingClientRect();
-                ", inputId, "addClick(e.pageX - rect.left, e.pageY - rect.top, true);
+                var mouseX = e.pageX - rect.left - $(window).scrollLeft();
+                var mouseY = e.pageY - rect.top - $(window).scrollTop(); 
+                ", inputId, "addClick(mouseX, mouseY, true);
 //                ", inputId, "addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
                 ", inputId, "redraw();
               };
