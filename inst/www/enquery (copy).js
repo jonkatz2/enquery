@@ -31,9 +31,8 @@ $.extend(multipointsliderBinding, {
             grp[name] = ( slide );
           };
         });
-        var conf = parseInt( $(this).find( "select.confidence" ).val() );
-        var temporal = $(this).find( "select.temporal" ).val();
-        pod[label] = ( { "data":grp, "conf":conf , "temporal":temporal} );
+        var conf = parseInt( $(this).find( "select" ).val() );
+        pod[label] = ( { "data":grp, "conf":conf } );
       };
     });
     var navactive = $(el).find( ".nav-link.active" ).data("stage");
@@ -59,22 +58,13 @@ $.extend(multipointsliderBinding, {
           var conf = 0;
         };
         
-        if( sval.hasOwnProperty("temporal") ) {
-          var temporal = sval.temporal;
-        } else {
-          var temporal = "";
-        };
-        
         if( sval.hasOwnProperty("data") ) sval = sval["data"];
         
         $(el).find( "span" ).each( function( ) {
           var label = $(this).find(".highlow").data("label");
           if( label == key ) {
             if(conf !== null) {
-              if(conf != 0 && conf != "") $(this).find( "select.confidence" ).val( conf );
-            };
-            if(temporal !== null) {
-              if(temporal != "") $(this).find( "select.temporal" ).val( temporal );
+              if(conf != 0 && conf != "") $(this).find( "select" ).val( conf );
             };
 //        $(el).find( ".sliderpod" ).each( function( ) {
             $(this).find( ".multipointslider-vertical" ).each(function( ) {
@@ -253,7 +243,7 @@ function multipointslider( id ) {
             if( $(this).data("live") == "1" ) { 
               var id = $(this).attr("id");
               $( "#" + subid + "mllabel" ).html( ui.value );
-            }; 
+            };
           },
 //          slide: function(event, ui) {
 //            var high = $(id + "highlow" + i + "_" + j ).slider( "values", 1);
@@ -287,22 +277,14 @@ $(document).ready(function() {
             enableML(id);
             disableHighLow(id);
             disableConfidence(id);
-            disableTemporal(id);
         } else if(stage == "confidence") {
             enableConfidence(id);
             enableML(id);
             disableHighLow(id);
-            disableTemporal(id);
         } else if(stage == "highlow") {
             enableHighLow(id);
             disableML(id);
             disableConfidence(id);
-            disableTemporal(id);
-        } else if(stage == "temporal") {
-            disableHighLow(id);
-            disableML(id);
-            disableConfidence(id);
-            enableTemporal(id);
         } else if(stage == "validate") {
             validateFPS(id);
         };
@@ -321,22 +303,14 @@ function stageseq() {
             enableML(id);
             disableHighLow(id);
             disableConfidence(id);
-            disableTemporal(id);
         } else if(stage == "confidence") {
             enableConfidence(id);
             enableML(id);
             disableHighLow(id);
-            disableTemporal(id);
         } else if(stage == "highlow") {
             enableHighLow(id);
             disableML(id);
             disableConfidence(id);
-            disableTemporal(id);
-        }  else if(stage == "temporal") {
-            disableHighLow(id);
-            disableML(id);
-            disableConfidence(id);
-            enableTemporal(id);
         } else if(stage == "validate") {
             validateFPS(id);
         };
@@ -350,23 +324,14 @@ function setstage(id, stage) {
         enableML(id);
         disableHighLow(id);
         disableConfidence(id);
-        disableTemporal(id);
     } else if(stage == "confidence") {
         $(id).find('*[data-stage="confidence"]').addClass(" active").click();
         enableConfidence(id);
         enableML(id);
         disableHighLow(id);
-        disableTemporal(id);
     } else if(stage == "highlow") {
         $(id).find('*[data-stage="highlow"]').addClass(" active").click();
         enableHighLow(id);
-        disableML(id);
-        disableConfidence(id);
-        disableTemporal(id);
-    } else if(stage == "temporal") {
-        $(id).find('*[data-stage="temporal"]').addClass(" active").click();
-        enableTemporal(id);
-        disableHighLow(id);
         disableML(id);
         disableConfidence(id);
     } else if(stage == "validate") {
@@ -417,28 +382,14 @@ function disableHighLow( id ) {
 
 // show the confidence inputs
 function enableConfidence( id ) {
-    $(id).find("select.confidence").each( function() {
+    $(id).find("select").each( function() {
         $(this).removeClass("vis-hide"); 
     });
 };
 
 // hide the confidence inputs
 function disableConfidence( id ) {
-    $(id).find("select.confidence").each( function() {
-        $(this).addClass("vis-hide"); 
-    });
-};
-
-// show the temporal inputs
-function enableTemporal( id ) {
-    $(id).find("select.temporal").each( function() {
-        $(this).removeClass("vis-hide"); 
-    });
-};
-
-// hide the temporal inputs
-function disableTemporal( id ) {
-    $(id).find("select.temporal").each( function() {
+    $(id).find("select").each( function() {
         $(this).addClass("vis-hide"); 
     });
 };
@@ -462,7 +413,7 @@ function validateFPS( id ) {
             $(this).removeClass("mlerr-err");
         };
     });
-    // confidence and temporal selctors must not be blank
+    // confidence must not be blank
     $(id).find("select").each(function() { 
         if($(this).val() == "") {
             $(this).addClass(" confblank-err");
@@ -498,7 +449,7 @@ function validateFPS( id ) {
             mlerr = "";
         };
         if(confblank) {
-            confblank = "<tr><td style='padding-right:1em;'>Value missing</td><td class='confblank-err legend-fill'></td></tr>";
+            confblank = "<tr><td style='padding-right:1em;'>Confidence missing</td><td class='confblank-err legend-fill'></td></tr>";
         } else {
             confblank = "";
         };

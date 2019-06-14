@@ -39,7 +39,7 @@ multiPointSliderInput <- function(
     } else activestep <- NULL
     grouplabels <- names(valuelist)
     groupnames <- lapply(valuelist, names)
-    if(all(groupnames[[1]] %in% c('data', 'conf'))) {
+    if(all(groupnames[[1]] %in% c('data', 'conf', 'temporal'))) {
         groupnames <- lapply(valuelist, function(x) names(x$data))
         hasdata <- TRUE
     } else hasdata <- FALSE
@@ -53,11 +53,12 @@ multiPointSliderInput <- function(
                     sapply(y, unlist, simplify=FALSE)
                 }, simplify=FALSE)
                 z$conf <- x$conf
+                z$temporal <- x$temporal
                 z
             } else x$data[groupnames]
         }, simplify=FALSE)
         valuelist <- sapply(valuelist, function(x) {
-            if(length(x$conf)) x
+            if(length(x$conf) || length(x$temporal)) x
             else x$data
         }, simplify=FALSE)
     } else valuelist <- sapply(valuelist, function(x) x[groupnames], simplify=FALSE)
@@ -108,6 +109,7 @@ multiPointSliderInput <- function(
         sublist <- valuelist[[y]]
         if(!is.list(sublist)) stop('valuelist must be a list of lists of vectors, or a list of list of lists.')
         confselected <- sublist$conf
+        tempselected <- sublist$temporal
         if(length(sublist$data)) sublist <- sublist$data
         # each set of sliders is in a .multipointslider-vertical span 
         subspans <- lapply(1:length(sublist), function(z) {
@@ -142,6 +144,17 @@ multiPointSliderInput <- function(
             )
         } else live.number.display <- div()
         
+        # Temporal selector
+        temp_opts <- lapply(c("<1 Year", "1 Year", "3 Years", "5 Years", "10 Years", "15 Years", "25 Years", ">25 Years"), function(o) {
+            opt.tag <- tags$option(value=o, o)
+            if(length(tempselected)) {
+                if(tempselected == o) opt.tag <- tags$option(value=o, selected="selected", o)
+            }
+            opt.tag
+        })
+        temp_opts <- c(list(class="temporal vis-hide", `data-trigger`="hover", `data-toggle`="tooltip", `data-placement`="left", `data-container`="body", title="How long to reach the above value?", tags$option(value='','')), temp_opts)
+        temporal <- do.call(tags$select, temp_opts)
+        
         # confidence
         if(confidence) {
             if(length(confselected)) 
@@ -153,22 +166,24 @@ multiPointSliderInput <- function(
                 }
                 opt.tag
             })
-            opts <- c(list(class="vis-hide", tags$option(value='','')), opts)
+            opts <- c(list(class="confidence vis-hide", `data-trigger`="hover", `data-toggle`="tooltip", `data-placement`="left", `data-container`="body", title="How confident are you that the range above will contain the actual value?", tags$option(value='','')), opts)
             conf <- do.call(tags$select, opts)
         } else conf <- div()
         
         # the .multipointslider-vertical spans are nested in .sliderpod spans
         tags$span(style=paste0("width:", widest, "em;min-width:6em;"),
-            tags$span(class="sliderpod", style=spanstyle, subspans),
+            tags$span(class="sliderpod", `data-trigger`="hover", `data-toggle`="tooltip", `data-container`="body", title="For fine adjustment, click a handle to activate it and use your up/down arrow keys to move it.", style=spanstyle, subspans),
             tags$p(class="x-axislabel", names(valuelist)[y]), #padleft
             tags$div(style="text-align:center;", #padleft
 #                tags$label(`for`=paste0(inputId, "conf", x), "Conf:"),
                 conf,
+                temporal,
 #                tags$input(class="vis-hide", style="text-align:center;", type="text", placeholder="Conf: 50-100%"),
                 live.number.display
             )
         )
     })
+    
     # lead with the vertical axis, follow with a placeholder for the validation legend
     contents <- c(list(tags$div(class="multipointslider-vertical-axis", style=paste0("height:",height,"px;"), ticks)), contents, list(tags$div(class="validate-legend")))
     # optional y-axis label
@@ -193,7 +208,26 @@ multiPointSliderInput <- function(
     # A nav above the input has buttons for the four steps
     if(confidence) {
         if(length(activestep)) {
-            stepclass <- c('highlow', 'ml', 'confidence', 'validate') 
+            stepclass <- c('highlow', 'ml', 'confidence', 'temporal', 'validate') 
+            active <- stepclass == activestep
+            stepclass[active] <- 'active'
+            stepclass[!active] <- ''
+        } else stepclass <- c('active', '', '', '', '')
+        buttons <- tags$nav(class="navbar",
+#          tags$p(class="navbar-brand", "Steps"),
+          tags$div(class="collapse navbar-collapse",
+            tags$div(class="navbar-nav", `data-parent`=inputId,
+              tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="highlow", "Step 1: Set High and Low"),
+              tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="ml", "Step 2: Set Most Likely"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[3]), style="margin-right:-4px;", `data-stage`="confidence", onclick="stageseq()", "Step 3: Set Confidence"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[4]), style="margin-right:-4px;", `data-stage`="temporal", onclick="stageseq()", "Step 4: Set Time Frame"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[5]), onclick="stageseq()", `data-stage`="validate", "Step 5: Validate")
+            )
+          )
+        ) 
+    } else {
+        if(length(activestep)) {
+            stepclass <- c('highlow', 'ml', 'temporal', 'validate') 
             active <- stepclass == activestep
             stepclass[active] <- 'active'
             stepclass[!active] <- ''
@@ -204,25 +238,8 @@ multiPointSliderInput <- function(
             tags$div(class="navbar-nav", `data-parent`=inputId,
               tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="highlow", "Step 1: Set High and Low"),
               tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="ml", "Step 2: Set Most Likely"),
-              tags$a(class=paste0("nav-item nav-link ", stepclass[3]), style="margin-right:-4px;", `data-stage`="confidence", onclick="stageseq()", "Step 3: Set Confidence"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[3]), style="margin-right:-4px;", `data-stage`="temporal", onclick="stageseq()", "Step 3: Set Time Frame"),
               tags$a(class=paste0("nav-item nav-link ", stepclass[4]), onclick="stageseq()", `data-stage`="validate", "Step 4: Validate")
-            )
-          )
-        ) 
-    } else {
-        if(length(activestep)) {
-            stepclass <- c('highlow', 'ml', 'validate') 
-            active <- stepclass == activestep
-            stepclass[active] <- 'active'
-            stepclass[!active] <- ''
-        } else stepclass <- c('active', '', '')
-        buttons <- tags$nav(class="navbar",
-#          tags$p(class="navbar-brand", "Steps"),
-          tags$div(class="collapse navbar-collapse",
-            tags$div(class="navbar-nav", `data-parent`=inputId,
-              tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="highlow", "Step 1: Set High and Low"),
-              tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="ml", "Step 2: Set Most Likely"),
-              tags$a(class=paste0("nav-item nav-link ", stepclass[3]), onclick="stageseq()", `data-stage`="validate", "Step 3: Validate")
             )
           )
         )
@@ -236,7 +253,7 @@ multiPointSliderInput <- function(
         buttons,
         legend,
         contents,
-        tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );setstage( '#", inputId, "', '", activestep,"' );"))
+        tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );setstage( '#", inputId, "', '", activestep,"' );$('[data-toggle=\"tooltip\"]').tooltip(\"hide\");"))
         #tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );$( '#", inputId, "' ).find('a.active').first().click();"))
     )
     
