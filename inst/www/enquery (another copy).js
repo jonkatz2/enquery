@@ -160,117 +160,127 @@ function multipointslider( id ) {
 // setup highlow range
   $( id + " .sliderpod" ).each(function( i ) {
      $(this).find( ".multipointslider-vertical .highlow" ).each(function( j ) {
-        // read initial values from markup and remove that
-        var values = $( this ).text().split(',').map(Number);
-        var min = parseFloat( $( this ).data("min") );
-        var max = parseFloat( $( this ).data("max") );
-        var step = parseFloat( $( this ).data("step") );
-        // these two data vals come from R and may deviate from bare true
-        var disab = $( this ).data("disabled");
-        var disabled = isTrue(disab);
-        var ref = $( this ).data("reference");
-        var reference = isTrue(ref);
-        var subid = $(this).attr("id");
-        
-        $( this ).empty().slider({
-          range: true,
-          min: min,
-          max: max,
-          step: step,
-          values: values,
-          animate: true,
-          disabled: disabled,
-          orientation: "vertical",
-          slide: function(event, ui) {
-            if( $(this).data("frozen") == "true" || reference ) { 
-              //alert("High and Low values are frozen while you set a Most likely value.");
-              return false;
-            } else {
-              if( $(this).data("live") == "1" ) { 
-                $( "#" + subid + "hlabel" ).html( ui.values[1] );
-                $( "#" + subid + "llabel" ).html( ui.values[0] );
-              };
-              return true;
-            }; 
-          },
-          change: function(event, ui) {
-            if( $(this).data("live") == "1" ) { 
-              var id = $(this).attr("id");
-                $( "#" + subid + "hlabel" ).html( ui.values[1] );
-                $( "#" + subid + "llabel" ).html( ui.values[0] );
-            };
-          },
-//          slide: function(event, ui) {
-//          slide: function(event, ui) {
-//            var ml = $(id + "ml" + i + "_" + j ).slider( "value");
-//            if(ui.values[1] < ml | ui.values[0] > ml){
-//               return false;
-//            } else {
-//              return ui.values;
-//            }
-//          },
-          stop: function(event, ui) {}
-      });
-      // start the live update
-      if( $(this).data("live") == "1" ) { 
-        $( "#" + subid + "hlabel").html( $( this ).slider( "values", 1 ) );
-        $( "#" + subid + "llabel").html( $( this ).slider( "values", 0 ) );
-      };
+        try {
+            // read initial values from markup and remove that
+            var values = $( this ).text().split(',').map(Number);
+            var min = parseFloat( $( this ).data("min") );
+            var max = parseFloat( $( this ).data("max") );
+            var step = parseFloat( $( this ).data("step") );
+            // these two data vals come from R and may deviate from bare true
+            var disab = $( this ).data("disabled");
+            var disabled = isTrue(disab);
+            var ref = $( this ).data("reference");
+            var reference = isTrue(ref);
+            var subid = $(this).attr("id");
+            
+            $( this ).empty().slider({
+              range: true,
+              min: min,
+              max: max,
+              step: step,
+              values: values,
+              animate: true,
+              disabled: disabled,
+              orientation: "vertical",
+              slide: function(event, ui) {
+                if( $(this).data("frozen") == "true" || reference ) { 
+                  //alert("High and Low values are frozen while you set a Most likely value.");
+                  return false;
+                } else {
+                  if( $(this).data("live") == "1" ) { 
+                    $( "#" + subid + "hlabel" ).html( ui.values[1] );
+                    $( "#" + subid + "llabel" ).html( ui.values[0] );
+                  };
+                  return true;
+                }; 
+              },
+              change: function(event, ui) {
+                if( $(this).data("live") == "1" ) { 
+                  var id = $(this).attr("id");
+                    $( "#" + subid + "hlabel" ).html( ui.values[1] );
+                    $( "#" + subid + "llabel" ).html( ui.values[0] );
+                };
+              },
+    //          slide: function(event, ui) {
+    //          slide: function(event, ui) {
+    //            var ml = $(id + "ml" + i + "_" + j ).slider( "value");
+    //            if(ui.values[1] < ml | ui.values[0] > ml){
+    //               return false;
+    //            } else {
+    //              return ui.values;
+    //            }
+    //          },
+              stop: function(event, ui) {}
+          });
+          // start the live update
+          if( $(this).data("live") == "1" ) { 
+            $( "#" + subid + "hlabel").html( $( this ).slider( "values", 1 ) );
+            $( "#" + subid + "llabel").html( $( this ).slider( "values", 0 ) );
+          };
+      } //try
+      catch(err) {
+        console.log(err);
+      }
     });
   });
   // setup ml point
   $( id + " .sliderpod" ).each(function( i ) {
       $(this).find( ".multipointslider-vertical .ml" ).each(function( j ) {
-        // read initial values from markup and remove that
-        var value = parseFloat( $( this ).text() );
-        var min = parseFloat( $( this ).data("min") );
-        var max = parseFloat( $( this ).data("max") );
-        var step = parseFloat( $( this ).data("step") );
-        var disab = $( this ).data("disabled");
-        var disabled = isTrue(disab);
-        var ref = $( this ).data("reference");
-        var reference = isTrue(ref);
-        var subid = $(this).attr("id");
-        $( this ).empty().slider({
-          value: value,
-          min: min,
-          max: max,
-          step: step,
-          animate: true,
-          disabled: disabled,
-          orientation: "vertical",
-          slide: function(event, ui) {
-            if( reference ) { 
-              //alert("High and Low values are frozen while you set a Most likely value.");
-              return false;
-            } else {
-              if( $(this).data("live") == "1" ) { 
-                $( "#" + subid + "mllabel" ).html( ui.value );
-              };
-              return true;
-            }; 
-          },
-          change: function(event, ui) {
+        try {
+            // read initial values from markup and remove that
+            var value = parseFloat( $( this ).text() );
+            var min = parseFloat( $( this ).data("min") );
+            var max = parseFloat( $( this ).data("max") );
+            var step = parseFloat( $( this ).data("step") );
+            var disab = $( this ).data("disabled");
+            var disabled = isTrue(disab);
+            var ref = $( this ).data("reference");
+            var reference = isTrue(ref);
+            var subid = $(this).attr("id");
+            $( this ).empty().slider({
+              value: value,
+              min: min,
+              max: max,
+              step: step,
+              animate: true,
+              disabled: disabled,
+              orientation: "vertical",
+              slide: function(event, ui) {
+                if( reference ) { 
+                  //alert("High and Low values are frozen while you set a Most likely value.");
+                  return false;
+                } else {
+                  if( $(this).data("live") == "1" ) { 
+                    $( "#" + subid + "mllabel" ).html( ui.value );
+                  };
+                  return true;
+                }; 
+              },
+              change: function(event, ui) {
+                if( $(this).data("live") == "1" ) { 
+                  var id = $(this).attr("id");
+                  $( "#" + subid + "mllabel" ).html( ui.value );
+                }; 
+              },
+    //          slide: function(event, ui) {
+    //            var high = $(id + "highlow" + i + "_" + j ).slider( "values", 1);
+    //            var low =  $(id + "highlow" + i + "_" + j ).slider( "values", 0);
+    //            if(ui.value > high | ui.value < low){
+    //               return false;
+    //            } else {
+    //              return ui.value;
+    //            }
+    //          },
+              stop: function(event, ui) {}
+            });
+            // start the live update
             if( $(this).data("live") == "1" ) { 
-              var id = $(this).attr("id");
-              $( "#" + subid + "mllabel" ).html( ui.value );
-            }; 
-          },
-//          slide: function(event, ui) {
-//            var high = $(id + "highlow" + i + "_" + j ).slider( "values", 1);
-//            var low =  $(id + "highlow" + i + "_" + j ).slider( "values", 0);
-//            if(ui.value > high | ui.value < low){
-//               return false;
-//            } else {
-//              return ui.value;
-//            }
-//          },
-          stop: function(event, ui) {}
-        });
-        // start the live update
-        if( $(this).data("live") == "1" ) { 
-          $( "#" + subid + "mllabel").html( $( this ).slider( "value" ) );
-        };
+              $( "#" + subid + "mllabel").html( $( this ).slider( "value" ) );
+            };
+        }// try
+        catch(err) {
+          console.log(err);
+        }
      });
   });
   Shiny.bindAll(id);

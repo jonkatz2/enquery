@@ -22,7 +22,8 @@ multiPointSliderInput <- function(
     bg.transparent = TRUE,
     height = 300,
     ht.unit = c('px', 'em'),
-    col = colorRampPalette(c('#0044b2','#c6d7f2'))
+    col = colorRampPalette(c('#0044b2','#c6d7f2')),
+    redraw = FALSE
 ) {
     if(any(
         missing(min), 
@@ -245,6 +246,12 @@ multiPointSliderInput <- function(
         )
     }  
     if(!length(activestep)) activestep <- 'highlow'
+    # If element already exists, must first destroy it
+    if(redraw) {
+        destroyfn <- paste0("destroySlider( '#", inputId, "' );")
+    } else {
+        destroyfn <- ""
+    }
     # The type key is used by the input binding find method
     slidertag <- tags$div(id=inputId, 
         type = 'multipointslider',
@@ -253,7 +260,7 @@ multiPointSliderInput <- function(
         buttons,
         legend,
         contents,
-        tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );setstage( '#", inputId, "', '", activestep,"' );$('[data-toggle=\"tooltip\"]').tooltip(\"hide\");"))
+        tags$script(type="text/javascript", paste0(destroyfn,"multipointslider( '#", inputId, "' );setstage( '#", inputId, "', '", activestep,"' );"))
         #tags$script(type="text/javascript", paste0("multipointslider( '#", inputId, "' );$( '#", inputId, "' ).find('a.active').first().click();"))
     )
     
