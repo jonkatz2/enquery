@@ -219,7 +219,7 @@ multiPointSliderInput <- function(
           tags$div(class="collapse navbar-collapse",
             tags$div(class="navbar-nav", `data-parent`=inputId,
               tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="highlow", "Step 1: Set High and Low"),
-              tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="ml", "Step 2: Set Most Likely"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="ml", "Step 2: Set Most Likely"),
               tags$a(class=paste0("nav-item nav-link ", stepclass[3]), style="margin-right:-4px;", `data-stage`="confidence", onclick="stageseq()", "Step 3: Set Confidence"),
               tags$a(class=paste0("nav-item nav-link ", stepclass[4]), style="margin-right:-4px;", `data-stage`="temporal", onclick="stageseq()", "Step 4: Set Time Frame"),
               tags$a(class=paste0("nav-item nav-link ", stepclass[5]), onclick="stageseq()", `data-stage`="validate", "Step 5: Validate")
@@ -238,7 +238,7 @@ multiPointSliderInput <- function(
           tags$div(class="collapse navbar-collapse",
             tags$div(class="navbar-nav", `data-parent`=inputId,
               tags$a(class=paste0("nav-item nav-link ", stepclass[1]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="highlow", "Step 1: Set High and Low"),
-              tags$a(class=paste0("step-ml nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="ml", "Step 2: Set Most Likely"),
+              tags$a(class=paste0("nav-item nav-link ", stepclass[2]), style="margin-right:-4px;", onclick="stageseq()", `data-stage`="ml", "Step 2: Set Most Likely"),
               tags$a(class=paste0("nav-item nav-link ", stepclass[3]), style="margin-right:-4px;", `data-stage`="temporal", onclick="stageseq()", "Step 3: Set Time Frame"),
               tags$a(class=paste0("nav-item nav-link ", stepclass[4]), onclick="stageseq()", `data-stage`="validate", "Step 4: Validate")
             )
