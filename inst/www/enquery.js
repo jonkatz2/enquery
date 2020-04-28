@@ -436,29 +436,29 @@ function disableHighLow( id ) {
 
 // show the confidence inputs
 function enableConfidence( id ) {
-    $(id).find("select.confidence").each( function() {
-        $(this).removeClass("vis-hide"); 
+    $(id).find("select.confidence").each( function(i) {
+        if(i != 0) { $(this).removeClass("vis-hide") }; 
     });
 };
 
 // hide the confidence inputs
 function disableConfidence( id ) {
-    $(id).find("select.confidence").each( function() {
-        $(this).addClass("vis-hide"); 
+    $(id).find("select.confidence").each( function(i) {
+        if(i != 0) { $(this).addClass("vis-hide") }; 
     });
 };
 
 // show the temporal inputs
 function enableTemporal( id ) {
-    $(id).find("select.temporal").each( function() {
-        $(this).removeClass("vis-hide"); 
+    $(id).find("select.temporal").each( function(i) {
+        if(i != 0) { $(this).removeClass("vis-hide") }; 
     });
 };
 
 // hide the temporal inputs
 function disableTemporal( id ) {
-    $(id).find("select.temporal").each( function() {
-        $(this).addClass("vis-hide"); 
+    $(id).find("select.temporal").each( function(i) {
+        if(i != 0) { $(this).addClass("vis-hide") }; 
     });
 };
 
