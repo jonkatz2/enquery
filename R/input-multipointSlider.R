@@ -129,20 +129,37 @@ multiPointSliderInput <- function(
         })
         # The live number display only updates from the right-most slider of each sliderpod
         if(live.numbers) {
-            live.number.display <- div(
-                tags$div(
-                    tags$p(class="live-display-label", style="padding-left:1em;display:inline;", "H:"),
-                    tags$p(id=paste0(inputId, "highlow", x, "_", length(sublist)-1, "hlabel"), style="display:inline;", class=paste0("live-display"), style="color:#f6931f; font-weight:bold;")
-                ),
-                tags$div(
-                    tags$p(class="live-display-label", style="padding-left:1em;display:inline;", "L:"),
-                    tags$p(id=paste0(inputId, "highlow", x, "_", length(sublist)-1, "llabel"), style="display:inline;", class="live-display", style="color:#f6931f; font-weight:bold;")
-                ),
-                tags$div(
-                    tags$p(class="live-display-label", style="display:inline;", "ML:"),
-                    tags$p(id=paste0(inputId, "ml", x, "_", length(sublist)-1, "mllabel"), style="display:inline;", class="live-display", style="color:#f6931f; font-weight:bold;")
+            if(x == 0) {
+                live.number.display <- div(
+                    tags$div(style="padding:0.5em 0em 0.15em 0em;",
+                        tags$p(class="live-display-label", style="padding-left:0.7em;display:inline;font-size:0.9em;", "H:"),
+                        tags$p(id=paste0(inputId, "highlow", x, "_", length(sublist)-1, "hlabel"), style="display:inline;", class=paste0("live-display"), style="color:#f6931f; font-weight:bold;")
+                    ),
+                    tags$div(style="padding:0.5em 0em 0.15em 0em;",
+                        tags$p(class="live-display-label", style="padding-left:0.7em;display:inline;font-size:0.9em;", "L:"),
+                        tags$p(id=paste0(inputId, "highlow", x, "_", length(sublist)-1, "llabel"), style="display:inline;", class="live-display", style="color:#f6931f; font-weight:bold;")
+                    ),
+                    tags$div(style="padding:0.5em 0em 0.15em 0em;",
+                        tags$p(class="live-display-label", style="display:inline;font-size:0.9em;", "ML:"),
+                        tags$p(id=paste0(inputId, "ml", x, "_", length(sublist)-1, "mllabel"), style="display:inline;", class="live-display", style="color:#f6931f; font-weight:bold;")
+                    )
                 )
-            )
+            } else {
+                live.number.display <- div(
+                    tags$div(
+                        tags$p(class="live-display-label", style="padding-left:0.7em;display:inline;font-size:0.9em;", "H:"),
+                        tags$input(id=paste0(inputId, "highlow", x, "_", length(sublist)-1, "hlabel"), style="display:inline;", class="live-display", type="text", style="color:#f6931f; font-weight:bold;", `data-sliderindex`=x)
+                    ),
+                    tags$div(
+                        tags$p(class="live-display-label", style="padding-left:0.7em;display:inline;font-size:0.9em;", "L:"),
+                        tags$input(id=paste0(inputId, "highlow", x, "_", length(sublist)-1, "llabel"), style="display:inline;", class="live-display", type="text", style="color:#f6931f; font-weight:bold;", `data-sliderindex`=x)
+                    ),
+                    tags$div(
+                        tags$p(class="live-display-label", style="display:inline;font-size:0.9em;", "ML:"),
+                        tags$input(id=paste0(inputId, "ml", x, "_", length(sublist)-1, "mllabel"), style="display:inline;", class="live-display", type="text", style="color:#f6931f; font-weight:bold;", `data-sliderindex`=x)
+                    )
+                )
+            }
         } else live.number.display <- div()
         
         # Temporal selector

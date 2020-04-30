@@ -187,8 +187,8 @@ function multipointslider( id ) {
               return false;
             } else {
               if( $(this).data("live") == "1" ) { 
-                $( "#" + subid + "hlabel" ).html( ui.values[1] );
-                $( "#" + subid + "llabel" ).html( ui.values[0] );
+                $( "#" + subid + "hlabel" ).val( ui.values[1] );
+                $( "#" + subid + "llabel" ).val( ui.values[0] );
               };
               return true;
             }; 
@@ -196,8 +196,8 @@ function multipointslider( id ) {
           change: function(event, ui) {
             if( $(this).data("live") == "1" ) { 
               var id = $(this).attr("id");
-                $( "#" + subid + "hlabel" ).html( ui.values[1] );
-                $( "#" + subid + "llabel" ).html( ui.values[0] );
+                $( "#" + subid + "hlabel" ).val( ui.values[1] );
+                $( "#" + subid + "llabel" ).val( ui.values[0] );
             };
           },
 //          slide: function(event, ui) {
@@ -213,8 +213,37 @@ function multipointslider( id ) {
       });
       // start the live update
       if( $(this).data("live") == "1" ) { 
+        // set the text of the existing conditions
         $( "#" + subid + "hlabel").html( $( this ).slider( "values", 1 ) );
         $( "#" + subid + "llabel").html( $( this ).slider( "values", 0 ) );
+        // set the numeric box value
+        $( "#" + subid + "hlabel").val( $( this ).slider( "values", 1 ) );
+        $( "#" + subid + "llabel").val( $( this ).slider( "values", 0 ) );
+        // link the input boxes to the sliders
+        $( "#" + subid + "hlabel" ).on("keyup.textInputBinding input.textInputBinding", function() {
+            var newval = $(this).val();
+            var sliderindex = $(this).data("sliderindex");
+            $( id + " .sliderpod" ).each(function( i ) {
+                $(this).find( ".multipointslider-vertical .highlow" ).each(function( j ) {
+                    if(i == sliderindex) {
+                        var subid = $(this).attr("id");
+                        $( "#" + subid ).slider("values", 1, newval);
+                    }
+                }); 
+            });
+        });
+        $( "#" + subid + "llabel" ).on("keyup.textInputBinding input.textInputBinding", function() {
+            var newval = $(this).val();
+            var sliderindex = $(this).data("sliderindex");
+            $( id + " .sliderpod" ).each(function( i ) {
+                $(this).find( ".multipointslider-vertical .highlow" ).each(function( j ) {
+                    if(i == sliderindex) {
+                        var subid = $(this).attr("id");
+                        $( "#" + subid ).slider("values", 0, newval);
+                    }
+                }); 
+            });
+        });
       };
     });
   });
@@ -245,7 +274,7 @@ function multipointslider( id ) {
               return false;
             } else {
               if( $(this).data("live") == "1" ) { 
-                $( "#" + subid + "mllabel" ).html( ui.value );
+                $( "#" + subid + "mllabel" ).val( ui.value );
               };
               return true;
             }; 
@@ -253,7 +282,7 @@ function multipointslider( id ) {
           change: function(event, ui) {
             if( $(this).data("live") == "1" ) { 
               var id = $(this).attr("id");
-              $( "#" + subid + "mllabel" ).html( ui.value );
+              $( "#" + subid + "mllabel" ).val( ui.value );
             }; 
           },
 //          slide: function(event, ui) {
@@ -270,6 +299,19 @@ function multipointslider( id ) {
         // start the live update
         if( $(this).data("live") == "1" ) { 
           $( "#" + subid + "mllabel").html( $( this ).slider( "value" ) );
+          $( "#" + subid + "mllabel").val( $( this ).slider( "value" ) );
+          $( "#" + subid + "mllabel" ).on("keyup.textInputBinding input.textInputBinding", function() {
+            var newval = $(this).val();
+            var sliderindex = $(this).data("sliderindex");
+            $( id + " .sliderpod" ).each(function( i ) {
+                $(this).find( ".multipointslider-vertical .ml" ).each(function( j ) {
+                    if(i == sliderindex) {
+                        var subid = $(this).attr("id");
+                        $( "#" + subid ).slider("value", newval);
+                    }
+                }); 
+            });
+        });
         };
      });
   });
