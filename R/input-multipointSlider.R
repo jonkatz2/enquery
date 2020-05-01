@@ -94,10 +94,12 @@ multiPointSliderInput <- function(
     
     # list of sliders  
     disabled <- reference <- FALSE  
-    contents <- lapply(1:length(valuelist)-1, function(x) {
+    contents <- lapply(1:length(valuelist)-1, function(x) { cat (x, " ")
         # x is the js index (from 0); y is the R index (from 1)
         y <- x+1
-
+        
+        if(grepl("^Existing", names(valuelist)[y])) reference <- TRUE
+        
         if(bg.box) {
             spanstyle <- c(spanstyle, "border-top:1px solid #ddd;border-bottom:1px solid #ddd;")
             if(y == 1) {
@@ -119,9 +121,9 @@ multiPointSliderInput <- function(
             if(length(sublist[[z]]['disabled'])) {
                 if(!is.na(sublist[[z]]['disabled'])) disabled <- unlist(sublist[[z]]['disabled']) 
             }
-            if(length(sublist[[z]]['reference'])) {
-                if(!is.na(sublist[[z]]['reference'])) reference <- unlist(sublist[[z]]['reference'])
-            }
+#            if(length(sublist[[z]]['reference'])) {
+#                if(!is.na(sublist[[z]]['reference'])) reference <- unlist(sublist[[z]]['reference'])
+#            }
             tags$span(class="multipointslider-vertical", 
                 tags$span(id=paste0(inputId, "highlow", x, "_", z-1), class=paste0("highlow multipointslider", z-1), style=paste0("height:",height,"px;"), `data-min`=mintick, `data-max`=maxtick, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-label`=grouplabels[y], `data-name`=groupnames[z], `data-frozen`="false", `data-live`=livenumber, paste0(unlist(sublist[[z]][c('low','high')]), collapse=',')),
                 tags$span(id=paste0(inputId, "ml", x, "_", z-1), class=paste0("ml multipointslider", z-1, " vis-hide"), style=paste0("height:",height,"px;"), `data-min`=mintick, `data-max`=maxtick, `data-step`=step, `data-disabled`=disabled, `data-reference`=reference, `data-name`=groupnames[z], `data-live`=livenumber, unlist(sublist[[z]]['ml']))
@@ -129,7 +131,7 @@ multiPointSliderInput <- function(
         })
         # The live number display only updates from the right-most slider of each sliderpod
         if(live.numbers) {
-            if(x == 0) {
+            if(reference) {
                 live.number.display <- div(
                     tags$div(style="padding:0.5em 0em 0.15em 0em;",
                         tags$p(class="live-display-label", style="padding-left:0.7em;display:inline;font-size:0.9em;", "H:"),
