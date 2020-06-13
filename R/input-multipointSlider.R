@@ -94,7 +94,7 @@ multiPointSliderInput <- function(
     
     # list of sliders  
     disabled <- reference <- FALSE  
-    contents <- lapply(1:length(valuelist)-1, function(x) { cat (x, " ")
+    contents <- lapply(1:length(valuelist)-1, function(x) { 
         # x is the js index (from 0); y is the R index (from 1)
         y <- x+1
         
